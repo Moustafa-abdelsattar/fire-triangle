@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+      "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js",
+      "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.mjs"
+    }
+  }
+  </script>
 </head>
 <body data-page="projects">
   <header id="site-header" class="site-header"></header>
@@ -35,5 +45,6 @@
   </main>
   <footer id="site-footer" class="site-footer"></footer>
   <script type="module" src="assets/js/main.js"></script>
+  <script type="module" src="assets/js/enhance.js"></script>
 </body>
 </html>

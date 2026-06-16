@@ -131,3 +131,8 @@ a{color:inherit;text-decoration:none}
 .mapcard{border:var(--rule);background:var(--white);padding:8px}
 .mapcard iframe{width:100%;height:300px;border:0;display:block}
 @media(max-width:800px){.grid--2-maps{grid-template-columns:1fr}}
+
+/* ===== Enhancement layer ===== */
+#triangle-slot{min-height:360px;position:relative}
+#triangle-slot canvas{max-width:100%}
+@media(max-width:900px){#triangle-slot{min-height:300px}}
