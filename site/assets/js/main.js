@@ -24,3 +24,8 @@ window.filterProducts = (cat)=>{
     p.hidden = !(cat==="all" || p.dataset.cat===cat);
   });
 };
+
+window.filterProjects = (cat)=>{
+  document.querySelectorAll("[data-pf]").forEach(b=>b.classList.toggle("is-active", b.dataset.pf===cat));
+  document.querySelectorAll("[data-proj]").forEach(p=>{ p.hidden = !(cat==="all"||p.dataset.proj===cat); });
+};

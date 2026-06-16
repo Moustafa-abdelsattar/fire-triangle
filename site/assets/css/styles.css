@@ -110,3 +110,14 @@ a{color:inherit;text-decoration:none}
   padding:10px 18px;background:transparent;color:#fff;border:1px solid #4a4844;cursor:pointer}
 .prodfilter__btn.is-active{background:var(--molten);border-color:var(--molten)}
 .prodfilter__btn:focus-visible{outline:2px solid var(--molten);outline-offset:3px}
+
+/* ===== Timeline (About) ===== */
+.timeline{list-style:none;border-left:2px solid var(--molten);margin-top:32px;padding-left:28px}
+.timeline li{position:relative;padding-bottom:28px}
+.timeline li::before{content:"";position:absolute;left:-35px;top:6px;width:12px;height:12px;background:var(--molten);border-radius:50%}
+.timeline__yr{font-family:var(--font-mono);color:var(--molten);font-size:14px;letter-spacing:.1em}
+
+/* ===== Numbered capability blocks (Services / Careers) ===== */
+.caps{list-style:none;margin-top:40px;display:grid;gap:0}
+.caps li{display:grid;grid-template-columns:auto 1fr;gap:28px;padding:28px 0;border-top:var(--rule);align-items:start}
+.caps__n{font-family:var(--font-display);font-size:var(--step-3);color:var(--molten);line-height:1}
