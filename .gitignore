@@ -1,0 +1,6 @@
+.playwright-mcp/
+*.jpeg
+*.png
+node_modules/
+__pycache__/
+.mcp.json
