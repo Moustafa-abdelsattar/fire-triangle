@@ -156,6 +156,33 @@ rail that does not overlap content, persistent "Download Brochure" + "Request a 
 - No e-commerce / online ordering.
 - No new brand colors, fonts beyond the three specified, or logo redesign beyond producing a clean SVG of the existing mark.
 
+## 10b. Enhancement layer — advanced libraries (added 2026-06-17)
+
+Per user direction, the site uses advanced JS as a **progressive-enhancement layer on top of
+the working baseline**. The baseline (semantic HTML + SVG triangle + IntersectionObserver
+reveals + count-up) always works with libraries off. When the enhancement layer loads, it
+upgrades the experience:
+
+- **Three.js** — a real 3D fire-triangle hero (rotating wireframe + molten ember particle
+  system + subtle heat shimmer) rendered into `#triangle-slot`. The 2D SVG triangle is the
+  fallback and is hidden only once WebGL initialises successfully.
+- **GSAP + ScrollTrigger** — scroll-driven reveals and the stat counters (replaces the raw
+  IntersectionObserver path when present).
+- **Lenis** — smooth inertial scrolling site-wide.
+
+**Delivery:** CDN + ES module **import maps** (no build step). Each page carries a
+`<script type="importmap">` mapping `three`, `gsap`, `gsap/ScrollTrigger`, and `lenis` to
+pinned CDN ESM URLs; a single `enhance.js` module imports them and boots the upgrades.
+
+**Discipline rules (still apply):** 3D uses ONLY palette colors (molten wireframe/embers on
+ash); motion respects `prefers-reduced-motion` (enhancement is skipped entirely); the page is
+fully usable and styled before any library loads, and if a CDN fails the baseline remains.
+
+**Budget impact:** §8's `< 1.5 MB` image budget is unchanged (it governs images). The CDN
+libraries (~Three.js 150KB + GSAP 40KB + Lenis 5KB gzipped) load from cache/CDN separately;
+hero WebGL must still hit 60fps on a mid-range laptop and degrade to the SVG fallback on
+low-power/mobile or when `prefers-reduced-motion` is set.
+
 ## 10. Open questions / assumptions
 
 - Product catalog content (SKUs, ratings, datasheets) — assume we reuse existing brochure
