@@ -1,9 +1,10 @@
 // Progressive enhancement: Three.js 3D hero + GSAP/ScrollTrigger reveals + Lenis smooth scroll.
 // Baseline (main.js) already works; this only upgrades. Bail safely on reduced-motion / no-WebGL / CDN failure.
 import * as THREE from "three";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
+
+const gsap = window.gsap;
+const ScrollTrigger = window.ScrollTrigger;
 
 const MOLTEN = 0xDD3333;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -15,7 +16,7 @@ function webglOK(){
 }
 
 // --- Smooth scroll + GSAP scroll reveals ---
-if(!reduce){
+if(!reduce && gsap && ScrollTrigger){
   try{
     gsap.registerPlugin(ScrollTrigger);
     const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
