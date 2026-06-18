@@ -34,15 +34,16 @@ SERVICES (three)
 - Maintenance: maintain all systems and supply spare parts under maintenance contracts, for all brands & systems.
 
 PRODUCTS
-- Fire alarm: sole agent for Velocity; also Simplex, Apollo, Notifier. Addressable & conventional panels, detectors, notification.
-- Water systems: Rapidrop UK (UL/FM) — sprinklers, valves, grooved fittings, hydrants, fire hose reel cabinets (multiple sizes, for commercial/industrial/residential), bladder tanks, accessories. Waterfall (UL/FM) firefighting pumps (standard, UL/FM-listed, horizontal split-case), jockey pumps, pump sets. CLA-VAL precision automatic control valves (pressure-reducing, deluge, flow-control).
+- Fire alarm (addressable & conventional): sole agent for Velocity; also Advanced (Axis AX control panels & LCD annunciators), Apollo (XP95A smoke/heat/multicriteria detectors), Simplex, Notifier. Plus dual-action pull stations, sounder beacons, alarm bells (e.g. GB24-6).
+- Water systems: Rapidrop UK (UL/FM) — concealed/pendent/upright/sidewall sprinklers; zone control valves & trim (water flow switch, tamper switch, swing check valve, OS&Y gate valve, test & drain); grooved fittings (rigid couplings, mechanical & equal tees, 45°/90° elbows, concentric reducers, adaptor flanges); wet/dry/underground hydrants & foam-monitor hydrants; bladder tanks; fire hose reels, cabinets, hoses & nozzles. Waterfall (UL/FM) pumps — end-suction, horizontal split-case, turbine, jockey (300–5000 GPM) & pump sets, plus GVI/Clebasvision flow meters. CLA-VAL automatic control valves — pressure-reducing, relief, air-release, deluge, casing-relief, modulating-float.
 - Gas systems: FM-200 & CO₂ clean-agent (Tyco, Ceodeux, Ansul); Aerosol (FirePro, Mobiak); Fire extinguishers (Bavaria, Mobiak).
 - Foam systems for flammable-liquid / high-hazard risks.
 - Mobiak: gas and wet-chemical suppression — ball/angle/pressure-restricting valves, breeching inlets, aerosol, hood kitchen suppression. UL listed, FM approved, and LPCB & VDS certified.
 - Jianzhi: threaded malleable-iron pipe fittings for fire fighting pipework.
 
 PROJECTS
-- 487+ delivered across commercial, industrial and residential sectors. A latest-projects PDF is available, and visitors can request references for their sector via Contact.
+- 487+ delivered across commercial, industrial and residential sectors. Named projects include: DP World (with contractor EDECS — Waterfall split-case pumps, 1500 GPM @ 10 bar); GLC Paints (Waterfall horizontal split-case pumps, 2500 & 1250 GPM); EGÜLSAN Egypt (Rapidrop 396-gallon foam bladder tank); Dakahlia Agricultural Development. A latest-projects PDF is available, and visitors can request references for their sector via Contact.
+- Fire Triangle is a Diamond Sponsor of Egypt Energy – Firex 2026, and has exhibited at Firex since 2021.
 
 CAREERS
 - No open positions right now. Candidates can send a CV via the Careers page; tagline "Are you passionate? Do you enjoy the work?".
