@@ -1,12 +1,12 @@
 {
   "name": "fire-triangle-site",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Fire Triangle static marketing site",
+  "description": "Fire Triangle static site + AI assistant proxy",
   "scripts": {
-    "start": "serve site -l ${PORT:-3000}"
+    "start": "node server.js"
   },
   "dependencies": {
-    "serve": "^14.2.4"
+    "express": "^4.19.2"
   }
 }

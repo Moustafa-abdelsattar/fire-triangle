@@ -150,4 +150,10 @@
     if (document.querySelector('[data-cat="' + hash + '"]')) window.filterProducts(hash);
     else if (document.querySelector('[data-proj="' + hash + '"]')) window.filterProjects(hash);
   }
+
+  // Load the Ember AI assistant widget on every page.
+  var ember = document.createElement("script");
+  ember.src = "assets/js/chat.js";
+  ember.defer = true;
+  document.body.appendChild(ember);
 })();
