@@ -4,3 +4,7 @@
 node_modules/
 __pycache__/
 .mcp.json
+
+# real site image assets (override the broad *.png ignore)
+!site/assets/img/**
+!site/favicon.png
