@@ -96,10 +96,14 @@
   var slot = document.getElementById("triangle-slot");
   if (slot) slot.appendChild(buildTriangle({}));
 
+  var revealEls = document.querySelectorAll("[data-reveal]");
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
   }, { threshold: .15 });
-  document.querySelectorAll("[data-reveal]").forEach(function (el) { io.observe(el); });
+  revealEls.forEach(function (el) { io.observe(el); });
+  // Let the enhancement layer (enhance.js) take ownership of reveals so the two
+  // systems don't double-handle the same elements. It calls disable() before wiring GSAP.
+  window.__baselineReveal = { disable: function () { revealEls.forEach(function (el) { io.unobserve(el); }); } };
 
   document.querySelectorAll("[data-count]").forEach(function (el) {
     var target = +el.dataset.count, n = 0;
@@ -116,4 +120,13 @@
     document.querySelectorAll("[data-pf]").forEach(function (b) { b.classList.toggle("is-active", b.dataset.pf === cat); });
     document.querySelectorAll("[data-proj]").forEach(function (p) { p.hidden = !(cat === "all" || p.dataset.proj === cat); });
   };
+
+  // Apply a category filter from an incoming hash so cross-page links like
+  // products.html#suppression land pre-filtered (the products grid filters via
+  // JS, so there are no anchor targets to scroll to — the hash selects a filter).
+  var hash = (location.hash || "").slice(1);
+  if (hash) {
+    if (document.querySelector('[data-cat="' + hash + '"]')) window.filterProducts(hash);
+    else if (document.querySelector('[data-proj="' + hash + '"]')) window.filterProjects(hash);
+  }
 })();

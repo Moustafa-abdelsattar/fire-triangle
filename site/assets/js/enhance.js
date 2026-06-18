@@ -19,17 +19,40 @@ function webglOK(){
 if(!reduce && gsap && ScrollTrigger){
   try{
     gsap.registerPlugin(ScrollTrigger);
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    const lenis = new Lenis({ lerp: 0.12, smoothWheel: true });
+    window.__lenis = lenis;
     function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
     lenis.on("scroll", ScrollTrigger.update);
 
+    // Take reveals over from the baseline IntersectionObserver so the two systems
+    // don't double-handle the same elements. Skip any the baseline already showed
+    // (don't re-hide them — that would cause a flash).
+    if(window.__baselineReveal) window.__baselineReveal.disable();
     gsap.utils.toArray("[data-reveal]").forEach((el)=>{
+      if(el.classList.contains("is-in")) return;
       gsap.fromTo(el, { autoAlpha: 0, y: 24 },
         { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out",
           onStart: ()=> el.classList.add("is-in"),
           scrollTrigger: { trigger: el, start: "top 85%" } });
     });
+
+    // Route in-page anchor links through Lenis so smooth-scroll works (native
+    // anchor jumps bypass Lenis and feel broken). Honor an incoming hash on load.
+    const headerH = 80;
+    document.addEventListener("click",(e)=>{
+      const a = e.target.closest('a[href*="#"]');
+      if(!a) return;
+      const url = new URL(a.getAttribute("href"), location.href);
+      if(url.pathname===location.pathname && url.hash && document.querySelector(url.hash)){
+        e.preventDefault();
+        lenis.scrollTo(url.hash, { offset: -headerH });
+        history.pushState(null, "", url.hash);
+      }
+    });
+    if(location.hash && document.querySelector(location.hash)){
+      requestAnimationFrame(()=> lenis.scrollTo(location.hash, { offset: -headerH, immediate: true }));
+    }
   }catch(e){ /* baseline IntersectionObserver in main.js remains active */ }
 }
 
@@ -83,16 +106,24 @@ function build3D(slot){
 
   if(svg) svg.style.display = "none";
 
+  // Only render while the hero is on-screen and the tab is visible — otherwise the
+  // loop burns ~180 draw calls/sec competing with scroll for the whole page.
+  let inView = true, frame = 0;
   function tick(){
+    frame = 0;
+    if(!inView || document.hidden) return;
     tri.rotation.y += 0.005; tri.rotation.x += 0.0022;
     core.rotation.y -= 0.004;
     const p = pg.attributes.position.array;
     for(let i = 0; i < N; i++){ p[i*3+1] += spd[i]; if(p[i*3+1] > 2.6) p[i*3+1] = -2.6; }
     pg.attributes.position.needsUpdate = true;
     renderer.render(scene, cam);
-    requestAnimationFrame(tick);
+    frame = requestAnimationFrame(tick);
   }
-  tick();
+  function kick(){ if(!frame && inView && !document.hidden) frame = requestAnimationFrame(tick); }
+  new IntersectionObserver((es)=>{ inView = es[0].isIntersecting; kick(); }).observe(slot);
+  document.addEventListener("visibilitychange", kick);
+  kick();
 
   addEventListener("resize", ()=>{
     w = slot.clientWidth || w; h = Math.min(w, 460);

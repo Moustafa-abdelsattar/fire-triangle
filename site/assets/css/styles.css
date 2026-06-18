@@ -12,7 +12,12 @@
   --rule:1px solid var(--hairline);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+/* No CSS smooth-scroll: Lenis (enhance.js) owns smooth scrolling when active.
+   Running both native + Lenis double-eases every wheel tick and feels laggy. */
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}
+.lenis.lenis-stopped{overflow:hidden}
 body{font-family:var(--font-body);font-size:var(--step-0);color:var(--ink);
   background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased}
 h1,h2,h3{font-family:var(--font-display);line-height:1.05;letter-spacing:-0.02em;font-weight:600}
@@ -42,9 +47,11 @@ a{color:inherit;text-decoration:none}
 
 /* ===== Grid + cards ===== */
 .grid{display:grid;gap:clamp(16px,3vw,32px)}
+.grid--2{grid-template-columns:repeat(2,1fr)}
 .grid--3{grid-template-columns:repeat(3,1fr)}
 .grid--4{grid-template-columns:repeat(4,1fr)}
 @media(max-width:900px){.grid--3,.grid--4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.grid--2{grid-template-columns:1fr}}
 @media(max-width:560px){.grid--3,.grid--4{grid-template-columns:1fr}}
 .card{background:var(--white);border:var(--rule);padding:24px;transition:border-color .2s,transform .2s}
 .card:hover{border-color:var(--molten);transform:translateY(-3px)}
@@ -127,6 +134,7 @@ a{color:inherit;text-decoration:none}
 .form label{display:grid;gap:6px;font-family:var(--font-mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--steel)}
 .form input,.form textarea{font-family:var(--font-body);font-size:16px;padding:12px;border:var(--rule);background:var(--white);color:var(--ink)}
 .form input:focus,.form textarea:focus{outline:2px solid var(--molten);outline-offset:1px;border-color:var(--molten)}
+.form__note{font-size:13px;color:var(--steel);margin:-4px 0 4px}
 .grid--2-maps{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .mapcard{border:var(--rule);background:var(--white);padding:8px}
 .mapcard iframe{width:100%;height:300px;border:0;display:block}
