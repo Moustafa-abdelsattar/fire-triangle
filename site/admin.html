@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Product Admin — Fire Triangle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body data-page="admin">
+  <main class="section">
+    <div class="container">
+      <span class="kicker">Admin</span>
+      <h1>Product manager</h1>
+
+      <section id="admin-login" class="admin__login" hidden>
+        <p class="hero__lede">Enter the admin password to manage the product catalogue.</p>
+        <form class="form" id="login-form" style="max-width:380px">
+          <label>Admin password<input type="password" id="admin-pw" autocomplete="current-password" required></label>
+          <button class="btn btn--primary" type="submit">Sign in</button>
+          <p class="form__note" id="login-msg"></p>
+        </form>
+      </section>
+
+      <section id="admin-panel" hidden>
+        <div class="admin__bar">
+          <span id="admin-count" class="prod__brand"></span>
+          <button class="btn btn--ghost" id="logout-btn" type="button">Sign out</button>
+        </div>
+
+        <h2 id="form-title" style="margin-top:32px">Add a product</h2>
+        <form class="form admin__form" id="product-form">
+          <input type="hidden" id="p-id">
+          <div class="grid grid--2">
+            <label>Name *<input id="p-name" required maxlength="200"></label>
+            <label>Brand<input id="p-brand" maxlength="120"></label>
+            <label>Category *<input id="p-category" list="cat-list" required maxlength="80"><datalist id="cat-list"></datalist></label>
+            <label>Certifications<input id="p-cert" maxlength="120" placeholder="e.g. UL/FM"></label>
+          </div>
+          <label>Specs / variations<input id="p-specs" maxlength="600"></label>
+          <label>Image path or URL<input id="p-image" maxlength="300" placeholder="/assets/img/products/example.jpg"></label>
+          <div class="hero__cta">
+            <button class="btn btn--primary" type="submit" id="save-btn">Add product</button>
+            <button class="btn btn--ghost" type="button" id="cancel-btn" hidden>Cancel edit</button>
+          </div>
+          <p class="form__note" id="form-msg"></p>
+        </form>
+
+        <h2 style="margin-top:48px">Catalogue</h2>
+        <div class="admin__list" id="admin-list"></div>
+      </section>
+    </div>
+  </main>
+  <script src="assets/js/admin.js" defer></script>
+</body>
+</html>

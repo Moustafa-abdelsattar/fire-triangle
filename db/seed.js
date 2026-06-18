@@ -11,13 +11,14 @@ async function main() {
   if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
   const products = JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
 
-  // Only the private network (*.railway.internal) is safe without TLS. Any other
-  // host (the public TCP proxy) carries the password over the internet, so require
-  // TLS to encrypt it. Railway's managed Postgres presents a self-signed cert, so
-  // verification is relaxed — encryption (not cert-pinning) is what protects the
-  // credentials here; cleartext would be the real vulnerability.
-  const isPrivate = /\.railway\.internal(?::|\/|$)/.test(url);
-  const client = new Client({ connectionString: url, ssl: isPrivate ? false : { rejectUnauthorized: false } });
+  // TLS posture from the parsed hostname. Private Railway network: no TLS needed.
+  // Any public host: verify the cert by default. Railway's managed Postgres uses a
+  // self-signed cert, so a one-off seed over the public proxy needs the operator to
+  // opt in explicitly with PGSSL_NO_VERIFY=1 — it is never the shipped default.
+  let host = ""; try { host = new URL(url).hostname; } catch (e) { host = ""; }
+  const ssl = host.endsWith(".railway.internal") ? false
+    : (process.env.PGSSL_NO_VERIFY === "1" ? { rejectUnauthorized: false } : { rejectUnauthorized: true });
+  const client = new Client({ connectionString: url, ssl });
   await client.connect();
   await client.query(`
     CREATE TABLE IF NOT EXISTS products (
