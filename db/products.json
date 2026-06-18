@@ -389,7 +389,7 @@
     "category": "Fire Alarm",
     "certifications": null,
     "specs": "Optical beam smoke detector (long-range)",
-    "image": null
+    "image": "/assets/img/products/ffe-fireray.jpg"
   },
   {
     "name": "Talentum Flame Detector",
@@ -437,7 +437,7 @@
     "category": "Foam",
     "certifications": "UL",
     "specs": "Flammable-liquid / high-hazard suppression",
-    "image": null
+    "image": "/assets/img/products/foam-system.jpg"
   },
   {
     "name": "Breeching Inlets",
