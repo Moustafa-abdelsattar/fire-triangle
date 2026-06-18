@@ -12,6 +12,7 @@
   --rule:1px solid var(--hairline);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 /* No CSS smooth-scroll: Lenis (enhance.js) owns smooth scrolling when active.
    Running both native + Lenis double-eases every wheel tick and feels laggy. */
 html.lenis,html.lenis body{height:auto}
