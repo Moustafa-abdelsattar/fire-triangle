@@ -7,7 +7,8 @@ const fs = require("fs");
 
 const app = express();
 app.disable("x-powered-by");
-app.use(express.json({ limit: "32kb" }));
+// Normal routes use a tight JSON limit; the image-upload route needs more headroom.
+app.use((req, res, next) => (req.path === "/api/admin/upload" ? next() : express.json({ limit: "32kb" })(req, res, next)));
 
 const SITE = path.join(__dirname, "site");
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
@@ -212,6 +213,35 @@ app.put("/api/admin/products/:id", async (req, res) => {
     );
     res.json({ ok: rowCount > 0 });
   });
+});
+app.post("/api/admin/upload", express.json({ limit: "8mb" }), async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
+  const { mime, data } = req.body || {};
+  const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  if (allowed.indexOf(mime) < 0 || typeof data !== "string") return res.status(400).json({ error: "Unsupported image type." });
+  let buf;
+  try { buf = Buffer.from(data, "base64"); } catch (e) { return res.status(400).json({ error: "Bad image data." }); }
+  if (!buf.length || buf.length > 5 * 1024 * 1024) return res.status(400).json({ error: "Image must be 1 byte–5 MB." });
+  const id = require("crypto").randomBytes(8).toString("hex");
+  await withDb(res, async (c) => {
+    await c.query("CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, mime TEXT NOT NULL, bytes BYTEA NOT NULL, created_at TIMESTAMPTZ DEFAULT now())");
+    await c.query("INSERT INTO images (id, mime, bytes) VALUES ($1,$2,$3)", [id, mime, buf]);
+    res.json({ ok: true, url: "/img/" + id });
+  });
+});
+app.get("/img/:id", async (req, res) => {
+  if (!process.env.DATABASE_URL) return res.status(404).end();
+  const id = String(req.params.id).replace(/[^a-f0-9]/g, "").slice(0, 32);
+  const c = dbClient();
+  try {
+    await c.connect();
+    const { rows } = await c.query("SELECT mime, bytes FROM images WHERE id=$1", [id]);
+    if (!rows.length) return res.status(404).end();
+    res.set("Content-Type", rows[0].mime);
+    res.set("Cache-Control", "public, max-age=31536000, immutable");
+    res.send(rows[0].bytes);
+  } catch (e) { console.error("img serve:", e.message); res.status(500).end(); }
+  finally { try { await c.end(); } catch (e) {} }
 });
 app.delete("/api/admin/products/:id", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });

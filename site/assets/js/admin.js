@@ -67,7 +67,26 @@
     $("cancel-btn").hidden = !p;
     if (p) window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  $("cancel-btn").addEventListener("click", function () { fillForm(null); $("form-msg").textContent = ""; });
+  $("cancel-btn").addEventListener("click", function () { fillForm(null); $("form-msg").textContent = ""; if ($("p-file")) $("p-file").value = ""; });
+
+  // Upload an image file -> stored in DB -> sets the image field to its /img/<id> URL.
+  $("p-file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) { $("form-msg").textContent = "Image too large (max 5 MB)."; this.value = ""; return; }
+    var fr = new FileReader();
+    fr.onload = function () {
+      var data = String(fr.result).split(",")[1];
+      $("form-msg").textContent = "Uploading image…";
+      fetch("/api/admin/upload", { method: "POST", headers: authHeaders(), body: JSON.stringify({ mime: f.type, data: data }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.url) { $("p-image").value = d.url; $("form-msg").textContent = "Image uploaded ✓ — click Save to apply."; }
+          else { $("form-msg").textContent = (d && d.error) || "Upload failed."; }
+        }).catch(function () { $("form-msg").textContent = "Upload error."; });
+    };
+    fr.readAsDataURL(f);
+  });
 
   $("product-form").addEventListener("submit", function (e) {
     e.preventDefault();

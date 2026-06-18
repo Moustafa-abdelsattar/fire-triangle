@@ -40,7 +40,8 @@
             <label>Certifications<input id="p-cert" maxlength="120" placeholder="e.g. UL/FM"></label>
           </div>
           <label>Specs / variations<input id="p-specs" maxlength="600"></label>
-          <label>Image path or URL<input id="p-image" maxlength="300" placeholder="/assets/img/products/example.jpg"></label>
+          <label>Upload image (jpg/png/webp, max 5 MB)<input type="file" id="p-file" accept="image/*"></label>
+          <label>Image path or URL<input id="p-image" maxlength="300" placeholder="/assets/img/products/example.jpg — or upload above"></label>
           <div class="hero__cta">
             <button class="btn btn--primary" type="submit" id="save-btn">Add product</button>
             <button class="btn btn--ghost" type="button" id="cancel-btn" hidden>Cancel edit</button>
