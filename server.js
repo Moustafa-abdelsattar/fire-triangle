@@ -35,7 +35,7 @@ SERVICES (three)
 
 PRODUCTS
 - Fire alarm: sole agent for Velocity; also Simplex, Apollo, Notifier. Addressable & conventional panels, detectors, notification.
-- Water systems: Rapidrop UK (UL/FM) — sprinklers, valves, grooved fittings, hydrants, fire hose & reels, bladder tanks, accessories. Waterfall (UL/FM) firefighting pumps (standard, UL/FM-listed, horizontal split-case), jockey pumps, pump sets. CLA-VAL precision automatic control valves (pressure-reducing, deluge, flow-control).
+- Water systems: Rapidrop UK (UL/FM) — sprinklers, valves, grooved fittings, hydrants, fire hose reel cabinets (multiple sizes, for commercial/industrial/residential), bladder tanks, accessories. Waterfall (UL/FM) firefighting pumps (standard, UL/FM-listed, horizontal split-case), jockey pumps, pump sets. CLA-VAL precision automatic control valves (pressure-reducing, deluge, flow-control).
 - Gas systems: FM-200 & CO₂ clean-agent (Tyco, Ceodeux, Ansul); Aerosol (FirePro, Mobiak); Fire extinguishers (Bavaria, Mobiak).
 - Foam systems for flammable-liquid / high-hazard risks.
 - Mobiak: gas and wet-chemical suppression — ball/angle/pressure-restricting valves, breeching inlets, aerosol, hood kitchen suppression. UL listed, FM approved, and LPCB & VDS certified.
