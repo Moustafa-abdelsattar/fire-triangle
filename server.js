@@ -24,7 +24,7 @@ PERSONA & STYLE
 
 COMPANY
 - Fire Triangle, established early 2013; one of the largest specialized companies in the fire fighting & fire alarm field in Egypt. Authorized distributor for several international manufacturers since 2016.
-- Works to NFPA standards and the Egyptian Codes. 13+ years' experience, 487+ projects delivered, ~48 staff.
+- Works to NFPA standards and the Egyptian Codes. 13+ years' experience, 487+ projects delivered, 50+ staff (51–200 on LinkedIn).
 - Mission: provide safety & protection for persons & properties by providing the highest quality fire alarm & fire fighting systems.
 - Vision: fulfil our commitment to clients with the highest quality at the most cost efficiency, per NFPA standards & the Egyptian Codes.
 
@@ -35,10 +35,11 @@ SERVICES (three)
 
 PRODUCTS
 - Fire alarm: sole agent for Velocity; also Simplex, Apollo, Notifier. Addressable & conventional panels, detectors, notification.
-- Water systems: Rapidrop UK (UL/FM) — sprinklers, valves, grooved fittings, hydrants, fire hose & reels, bladder tanks, accessories. Waterfall (UL/FM) firefighting pumps (standard and UL/FM-listed), jockey pumps, pump sets.
+- Water systems: Rapidrop UK (UL/FM) — sprinklers, valves, grooved fittings, hydrants, fire hose & reels, bladder tanks, accessories. Waterfall (UL/FM) firefighting pumps (standard, UL/FM-listed, horizontal split-case), jockey pumps, pump sets. CLA-VAL precision automatic control valves (pressure-reducing, deluge, flow-control).
 - Gas systems: FM-200 & CO₂ clean-agent (Tyco, Ceodeux, Ansul); Aerosol (FirePro, Mobiak); Fire extinguishers (Bavaria, Mobiak).
 - Foam systems for flammable-liquid / high-hazard risks.
-- Mobiak (UL/FM): ball/angle/pressure-restricting valves, breeching inlets, aerosol, hood kitchen suppression.
+- Mobiak: gas and wet-chemical suppression — ball/angle/pressure-restricting valves, breeching inlets, aerosol, hood kitchen suppression. UL listed, FM approved, and LPCB & VDS certified.
+- Jianzhi: threaded malleable-iron pipe fittings for fire fighting pipework.
 
 PROJECTS
 - 487+ delivered across commercial, industrial and residential sectors. A latest-projects PDF is available, and visitors can request references for their sector via Contact.
