@@ -183,7 +183,7 @@ a{color:inherit;text-decoration:none}
 .prod__brand{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--steel)}
 .prod__cert{color:var(--molten)}
 .prod__name{font-size:18px;line-height:1.15}
-.prod__spec{font-size:13px;color:var(--ink);opacity:.72;margin:0}
+.prod__spec{font-size:13px;color:var(--ink);opacity:.72;margin:0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .prod{cursor:pointer}
 .prod:focus-visible{outline:2px solid var(--molten);outline-offset:2px}
 .prod__more{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:var(--molten);margin-top:auto;padding-top:8px}

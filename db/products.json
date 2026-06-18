@@ -4,7 +4,7 @@
     "brand": "Rapidrop",
     "category": "Sprinklers",
     "certifications": "UL/FM",
-    "specs": "K-factor 5.6; Quick Response",
+    "specs": "K-factor 5.6; Quick Response; 12.1 bar (175 psi); fusible link; sprinkler 72°C / cover plate 60°C.",
     "image": "/assets/img/products/sprinkler-concealed-pendent.jpg"
   },
   {
@@ -12,7 +12,7 @@
     "brand": "Rapidrop",
     "category": "Sprinklers",
     "certifications": "UL/FM",
-    "specs": "Standard orifice; multiple temperature ratings",
+    "specs": "Standard orifice ½\"–¾\"; K 5.6; 175 psi; temps 68/79/93/141°C; Standard (RD022/042) & Quick Response (RD023/043).",
     "image": "/assets/img/products/sprinkler-pendent.jpg"
   },
   {
@@ -20,7 +20,7 @@
     "brand": "Rapidrop",
     "category": "Sprinklers",
     "certifications": "UL/FM",
-    "specs": "Standard orifice",
+    "specs": "½\"–¾\"; K 5.6 (½\") / 8 (¾\"); 12 bar (175 psi); temps 68/79/93/141°C; models RD024/044 & RD025/045.",
     "image": "/assets/img/products/sprinkler-upright.jpg"
   },
   {
@@ -28,7 +28,7 @@
     "brand": "Rapidrop",
     "category": "Sprinklers",
     "certifications": "UL/FM",
-    "specs": "Standard orifice",
+    "specs": "Size ½\"; K 5.6; 175 psi; 68°C; Standard (RD060) & Quick Response (RD061).",
     "image": "/assets/img/products/sprinkler-sidewall.jpg"
   },
   {
@@ -36,7 +36,7 @@
     "brand": "CLA-VAL",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "2.5\"–8\"; ANSI Class 150, 175 psi max; Model 2050B-4KG; Switzerland",
+    "specs": "Size range 2½\"–10\"; ANSI Class 150, 175 psi max; Model Aqua 90G-21 Globe Type; Origin Switzerland.",
     "image": "/assets/img/products/claval-pressure-reducing.jpg"
   },
   {
@@ -44,7 +44,7 @@
     "brand": "CLA-VAL",
     "category": "Valves & Control",
     "certifications": "FM Approved",
-    "specs": "3\"–8\"; Switzerland",
+    "specs": "Size 3\"–8\"; ANSI Class 150, 175 psi max; Model 2050B-4KG (Angle/Globe); Origin Switzerland.",
     "image": "/assets/img/products/claval-relief.jpg"
   },
   {
@@ -52,7 +52,7 @@
     "brand": "CLA-VAL",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "Switzerland",
+    "specs": "Available size 1\"; working pressure 300 psi max; Model 3410AR; Origin Switzerland.",
     "image": "/assets/img/products/claval-air-release.jpg"
   },
   {
@@ -60,7 +60,7 @@
     "brand": "CLA-VAL",
     "category": "Valves & Control",
     "certifications": "UL listed",
-    "specs": "2\"–2.5\"; Switzerland",
+    "specs": "2\"–2½\" (non-UL), 3\"–8\" (UL listed); ANSI Class 150, 175 psi max; Model 134-05; Origin Switzerland.",
     "image": "/assets/img/products/claval-deluge.jpg"
   },
   {
@@ -68,7 +68,7 @@
     "brand": "CLA-VAL",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "3/4\"+; Switzerland",
+    "specs": "Size ¾\"; working pressure 175 psi max; Model 55L-60; Origin Switzerland.",
     "image": "/assets/img/products/claval-casing-relief.jpg"
   },
   {
@@ -76,7 +76,7 @@
     "brand": "CLA-VAL",
     "category": "Valves & Control",
     "certifications": "FM Approved",
-    "specs": "3\"+; Switzerland",
+    "specs": "Size 3\"–4\"; upstream pressure max 16 bar; Model Aqua 80-910; Origin Switzerland.",
     "image": "/assets/img/products/claval-modulating-float.jpg"
   },
   {
@@ -84,7 +84,7 @@
     "brand": "Rapidrop",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "Zone control trim",
+    "specs": "Test & Drain; size 1\"–2\"; K 5.6 & 8; brass body; 3-position OFF/TEST/DRAIN; UL/FM.",
     "image": "/assets/img/products/zcv-test-drain.jpg"
   },
   {
@@ -92,7 +92,7 @@
     "brand": "Rapidrop",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "2\"–8\"",
+    "specs": "Water Flow Switch; size 2\"–8\"; enclosure IP54; UL/FM.",
     "image": "/assets/img/products/zcv-flow-switch.jpg"
   },
   {
@@ -100,7 +100,7 @@
     "brand": "Rapidrop",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "2\"+",
+    "specs": "Tamper Switch; size 2\"–24\"; enclosure IP65; UL/FM.",
     "image": "/assets/img/products/zcv-tamper-switch.jpg"
   },
   {
@@ -108,7 +108,7 @@
     "brand": "Rapidrop",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "2\"–12\"",
+    "specs": "Swing Check Valve; size 2\"–12\"; flanged & grooved; 300 psi; UL/FM.",
     "image": "/assets/img/products/zcv-check-valve.jpg"
   },
   {
@@ -116,7 +116,7 @@
     "brand": "Rapidrop",
     "category": "Valves & Control",
     "certifications": "UL/FM",
-    "specs": "2\"–24\"; flanged (24\" at Cairo Airport hangar)",
+    "specs": "OS&Y Gate Valve; 2\"–24\" flanged, 2\"–12\" grooved; 300 psi; UL/FM.",
     "image": "/assets/img/products/zcv-gate-valve.jpg"
   },
   {
@@ -132,7 +132,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "Grooved",
+    "specs": "Standard Rigid Coupling; 50mm (2\")–300mm (12\"); 300 psi; ductile iron, red/galvanised; −34 to +110°C.",
     "image": "/assets/img/products/grooved-rigid-coupling.jpg"
   },
   {
@@ -140,7 +140,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "Grooved branch outlet",
+    "specs": "Mechanical Tee (grooved outlet); DN32–DN200 (2\"×1\"–8\"×4\"); 300 psi; ductile iron; EPDM gasket.",
     "image": "/assets/img/products/grooved-mechanical-tee.jpg"
   },
   {
@@ -148,7 +148,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "DN65–DN250 (2.5\"–10\")",
+    "specs": "Grooved Equal Tee; DN65–DN250 (2½\"–10\"); 20.7 bar (300 psi); ductile iron.",
     "image": "/assets/img/products/grooved-equal-tee.jpg"
   },
   {
@@ -156,7 +156,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "DN25–DN300 (1\"–12\")",
+    "specs": "Grooved 90° Elbow; DN25–DN300 (1\"–12\"); 34.4 bar (500 psi); ductile iron.",
     "image": "/assets/img/products/grooved-elbow-90.jpg"
   },
   {
@@ -164,7 +164,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "2\"–12\"",
+    "specs": "Grooved 45° Elbow; 2\"–12\"; 34.4 bar (500 psi); ductile iron.",
     "image": "/assets/img/products/grooved-elbow-45.jpg"
   },
   {
@@ -172,7 +172,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "DN32–DN250",
+    "specs": "Grooved Concentric Reducer; 2\"×1\"–10\"×8\"; 34.4 bar (500 psi); ductile iron.",
     "image": "/assets/img/products/grooved-reducer.jpg"
   },
   {
@@ -180,7 +180,7 @@
     "brand": "Rapidrop",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "DN50–DN250 (2\"–10\")",
+    "specs": "Grooved Adaptor Flange; DN50–DN250 (2\"–10\"); 20.7 bar (300 psi); ductile iron.",
     "image": "/assets/img/products/grooved-flange.jpg"
   },
   {
@@ -188,7 +188,7 @@
     "brand": "Jianzhi",
     "category": "Fittings",
     "certifications": "UL/FM",
-    "specs": "Malleable-iron threaded pipe fittings",
+    "specs": "Threaded fittings; size ½\"–2\"; malleable iron; UL/FM approved.",
     "image": "/assets/img/products/jianzhi-threaded-fittings.jpg"
   },
   {
@@ -196,7 +196,7 @@
     "brand": "Rapidrop",
     "category": "Hydrants",
     "certifications": "FM Approved",
-    "specs": "4\"×2.5\"×2.5\", 6\"×2.5\"×2.5\"",
+    "specs": "1½\"/2½\" (1 inlet, 2 outlets); PN16 ANSI Class 125/150 flanged inlet; 2½\" threaded outlets w/ BS336 quick coupling; 220 psi (15 bar), test 325 psi.",
     "image": "/assets/img/products/hydrant-wet.jpg"
   },
   {
@@ -204,7 +204,7 @@
     "brand": "Rapidrop",
     "category": "Hydrants",
     "certifications": "FM Approved",
-    "specs": "6\"×4.5\"×2.5\"",
+    "specs": "6\"×4.5\"×2.5\"×2.5\" (1 inlet, 3 outlets); 6\" ANSI Class 125/150; 4.5\" pump connection; 2.5\" threaded outlets; 250 psi (17.2 bar).",
     "image": "/assets/img/products/hydrant-dry.jpg"
   },
   {
@@ -212,7 +212,7 @@
     "brand": "Rapidrop",
     "category": "Hydrants",
     "certifications": "FM Approved",
-    "specs": "DN80",
+    "specs": "DN80; PN16/ANSI ends; 250 psi; stainless-steel stem; temp −10 to +70°C; UL/FM.",
     "image": "/assets/img/products/hydrant-underground.jpg"
   },
   {
@@ -220,7 +220,7 @@
     "brand": "Rapidrop",
     "category": "Hydrants",
     "certifications": "FM Approved",
-    "specs": "6\"",
+    "specs": "6\"×2.5\"×2.5\"; 6\" ANSI/ASTM Class 125/150; 2.5\" nozzle threaded; 250 psi (17.2 bar).",
     "image": "/assets/img/products/hydrant-foam-monitor.jpg"
   },
   {
@@ -228,7 +228,7 @@
     "brand": "Waterfall",
     "category": "Pumps",
     "certifications": "UL/FM",
-    "specs": "300–5000 GPM; UK manufactured",
+    "specs": "Horizontal split-case fire pump (e.g. 1500 GPM @ 10 bar — DP World/EDECS); UL listed, FM approved.",
     "image": "/assets/img/products/pump-split-case.jpg"
   },
   {
@@ -236,7 +236,7 @@
     "brand": "Waterfall",
     "category": "Pumps",
     "certifications": "UL/FM",
-    "specs": "250–1000 GPM",
+    "specs": "End-suction fire pump; 250–1000 GPM; 80–309 psi; UL/FM.",
     "image": "/assets/img/products/pump-end-suction.jpg"
   },
   {
@@ -244,7 +244,7 @@
     "brand": "Waterfall",
     "category": "Pumps",
     "certifications": "UL/FM",
-    "specs": "From 150 GPM",
+    "specs": "Vertical turbine pump; 150–2000 GPM; 49 psi (3.7 bar) to 402 psi (27.7 bar).",
     "image": "/assets/img/products/pump-turbine.jpg"
   },
   {
@@ -260,7 +260,7 @@
     "brand": "GVI / Clebasvision",
     "category": "Pumps",
     "certifications": "FM Approved",
-    "specs": "4\"–8\"",
+    "specs": "GVI / Clebasvision flow meter; size 4\"–8\"; grooved; max 500 psi; flow 250–3000 GPM; FM approved.",
     "image": "/assets/img/products/gvi-flow-meter.jpg"
   },
   {
@@ -268,7 +268,7 @@
     "brand": "Rapidrop",
     "category": "Tanks",
     "certifications": "UL listed",
-    "specs": "From 53 gallon (e.g. 396 gallon)",
+    "specs": "Foam bladder tank; 25–3963 gallon; AFFF 3% / AR-AFFF 3%; vertical & horizontal; UL listed.",
     "image": "/assets/img/products/rapidrop-bladder-tank.jpg"
   },
   {
@@ -276,7 +276,7 @@
     "brand": "Rapidrop",
     "category": "Hoses & Cabinets",
     "certifications": null,
-    "specs": "1.25mm metal; 1\" & 2.5\"",
+    "specs": "Single hose cabinet; 1\" & 2.5\"; 1.25mm metal (1.5mm painted); 1100×800×300mm; stainless steel.",
     "image": "/assets/img/products/hose-cabinet-single.jpg"
   },
   {
@@ -284,7 +284,7 @@
     "brand": "Rapidrop",
     "category": "Hoses & Cabinets",
     "certifications": null,
-    "specs": "1.25mm metal; 1\" & 2.5\"",
+    "specs": "Double hose cabinet; 1\" & 2.5\"; 1.25mm metal; 1600×800×300mm; stainless steel.",
     "image": "/assets/img/products/hose-cabinet-double.jpg"
   },
   {
@@ -292,7 +292,7 @@
     "brand": "Rapidrop",
     "category": "Hoses & Cabinets",
     "certifications": null,
-    "specs": "1.25mm metal",
+    "specs": "Stand-alone hose cabinet; 1\" & 2.5\"; 1.25mm metal; 1800×800×300mm; red painted.",
     "image": "/assets/img/products/hose-cabinet-standalone.jpg"
   },
   {
@@ -300,7 +300,7 @@
     "brand": "Rapidrop",
     "category": "Hoses & Cabinets",
     "certifications": "LPCB",
-    "specs": "1\"; 12 bar working, 42 bar burst",
+    "specs": "1\" hose reel; angle valve + 30m hose on steel reel + 1\" nozzle; Model NR-01; 175 psi; LPCB/CE.",
     "image": "/assets/img/products/fire-hose-reel.jpg"
   },
   {
@@ -308,7 +308,7 @@
     "brand": "Rapidrop",
     "category": "Hoses & Cabinets",
     "certifications": null,
-    "specs": "2.5\"×30m; single jacket; 250 psi; Model FIG 413",
+    "specs": "2.5\" × 30m; single jacket, white; aluminium coupling; working pressure 250 psi.",
     "image": "/assets/img/products/fire-hose.jpg"
   },
   {
@@ -316,7 +316,7 @@
     "brand": "Rapidrop",
     "category": "Hoses & Cabinets",
     "certifications": null,
-    "specs": "16 bar; Model FHN25",
+    "specs": "2.5\" nozzle; 16 bar; Model FHN25; UK; handheld controllable shut/jet/spray.",
     "image": "/assets/img/products/fire-hose-nozzle.jpg"
   },
   {
@@ -324,7 +324,7 @@
     "brand": "Advanced",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "Addressable",
+    "specs": "Axis AX addressable control panel; 1, 2 & 4 loops; 126 devices/loop; Advanced; UL.",
     "image": "/assets/img/products/alarm-control-panel.jpg"
   },
   {
@@ -332,7 +332,7 @@
     "brand": "Advanced",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "Remote graphical, addressable",
+    "specs": "Axis AX remote graphical LCD annunciator; 1–2 loops; 126 devices/loop; Advanced.",
     "image": "/assets/img/products/alarm-annunciator.jpg"
   },
   {
@@ -340,7 +340,7 @@
     "brand": "Apollo",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "Addressable",
+    "specs": "XP95A addressable smoke detector; smoke/heat/multi; high performance; Advanced.",
     "image": "/assets/img/products/alarm-smoke.jpg"
   },
   {
@@ -348,7 +348,7 @@
     "brand": "Apollo",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "Addressable",
+    "specs": "XP95A addressable heat detector; high performance; Advanced.",
     "image": "/assets/img/products/alarm-heat.jpg"
   },
   {
@@ -356,7 +356,7 @@
     "brand": "Apollo",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "Addressable",
+    "specs": "XP95A addressable multicriteria detector (smoke + heat + multi); Advanced.",
     "image": "/assets/img/products/alarm-multicriteria.jpg"
   },
   {
@@ -364,7 +364,7 @@
     "brand": "Advanced",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "Manual call point",
+    "specs": "Advanced dual-action pull station; red status LED; key-lock reset; UL listed (S24867).",
     "image": "/assets/img/products/alarm-pull-station.jpg"
   },
   {
@@ -372,7 +372,7 @@
     "brand": "Advanced",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "15-tone, 7-volume; synchronized",
+    "specs": "Sounder beacon; 15 tones, 7 volumes; built-in synchronization (audible & flash); individual & group addressing; UL464.",
     "image": "/assets/img/products/alarm-sounder.jpg"
   },
   {
@@ -380,7 +380,7 @@
     "brand": "Advanced",
     "category": "Fire Alarm",
     "certifications": "UL",
-    "specs": "6\" housing; 24 VDC",
+    "specs": "Alarm Bell GB24-6; 6\" housing; 24 VDC; indoor; Advanced; UL.",
     "image": "/assets/img/products/alarm-bell.jpg"
   },
   {
@@ -420,7 +420,7 @@
     "brand": "FirePro / Mobiak",
     "category": "Gas Suppression",
     "certifications": null,
-    "specs": "Condensed-aerosol (Mobiak Aerosol ECO GREEN)",
+    "specs": "Aerosol ECO GREEN extinguishing system; 50–5000 g; temp −40 to +54°C; Greece (Mobiak).",
     "image": "/assets/img/products/aerosol-suppression.jpg"
   },
   {
@@ -428,7 +428,7 @@
     "brand": "Mobiak",
     "category": "Gas Suppression",
     "certifications": "UL/FM, LPCB, VDS",
-    "specs": "Automatic wet-chemical kitchen suppression",
+    "specs": "Automatic kitchen hood suppression; 9–30 L capacity; stainless-steel cylinders; fusible-link; Mobiak; UL.",
     "image": "/assets/img/products/mobiak-kitchen-hood.jpg"
   },
   {
@@ -436,7 +436,7 @@
     "brand": "Rapidrop",
     "category": "Foam",
     "certifications": "UL",
-    "specs": "Flammable-liquid / high-hazard suppression",
+    "specs": "Foam system / bladder tank; AFFF 3% / AR-AFFF 3%; all sizes; UL listed (Rapidrop).",
     "image": "/assets/img/products/foam-system.jpg"
   },
   {
@@ -444,7 +444,7 @@
     "brand": "Mobiak",
     "category": "Accessories",
     "certifications": "UL/FM, LPCB",
-    "specs": "e.g. 4\"×2.5\"×2.5\"",
+    "specs": "Breeching inlets; 6\"×2.5\"×2.5\"×2.5\"×2.5\" four-way; 10 bar (test 20 bar); Model MBK08-203; Greece; LPCB.",
     "image": "/assets/img/products/mobiak-breeching.jpg"
   },
   {
@@ -452,7 +452,7 @@
     "brand": "Mobiak",
     "category": "Accessories",
     "certifications": "FM Approved",
-    "specs": "Firefighting ball valves",
+    "specs": "Ball valves; size ½\"–4\"; 175 psi; Model MBK22-BV-UL; Greece; FM approved.",
     "image": "/assets/img/products/mobiak-ball-valve.jpg"
   },
   {
@@ -460,7 +460,7 @@
     "brand": "Mobiak",
     "category": "Accessories",
     "certifications": "FM Approved",
-    "specs": "Angle / pressure-restricting",
+    "specs": "Pressure-restricting angle valves; 1½\"–2½\"; 175 psi; female; Model MBK-PRV-1.5; Greece; FM approved.",
     "image": "/assets/img/products/mobiak-pressure-restricting.jpg"
   },
   {
