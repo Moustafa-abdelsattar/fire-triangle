@@ -3,6 +3,7 @@
 // only used server-side here. The browser talks to /api/chat on this origin.
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 app.disable("x-powered-by");
@@ -114,6 +115,36 @@ app.post("/api/chat", async (req, res) => {
     console.error("Chat handler failed:", e);
     res.status(500).json({ error: "Something went wrong reaching the assistant." });
   }
+});
+
+// ---- Product catalogue: DB when available, else the bundled JSON file ----
+let PRODUCTS_FILE = null;
+function fileProducts() {
+  if (!PRODUCTS_FILE) {
+    try { PRODUCTS_FILE = JSON.parse(fs.readFileSync(path.join(__dirname, "db", "products.json"), "utf8")); }
+    catch (e) { console.error("products.json read failed:", e.message); PRODUCTS_FILE = []; }
+  }
+  return PRODUCTS_FILE;
+}
+app.get("/api/products", async (req, res) => {
+  const url = process.env.DATABASE_URL;
+  if (url) {
+    try {
+      const { Client } = require("pg");
+      const needsSsl = /sslmode=require/.test(url) || /proxy\.rlwy\.net/.test(url);
+      const c = new Client({ connectionString: url, ssl: needsSsl ? { rejectUnauthorized: true } : false });
+      await c.connect();
+      const { rows } = await c.query(
+        "SELECT name, brand, category, certifications, specs, image FROM products ORDER BY (image IS NULL), category, id"
+      );
+      await c.end();
+      if (rows.length) return res.json({ source: "db", count: rows.length, products: rows });
+    } catch (e) {
+      console.error("DB products read failed, serving file:", e.message);
+    }
+  }
+  const products = fileProducts();
+  res.json({ source: "file", count: products.length, products });
 });
 
 // ---- Static site (serves index.html at /, clean .html URLs, no dir listing) ----
