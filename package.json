@@ -1,0 +1,12 @@
+{
+  "name": "fire-triangle-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fire Triangle static marketing site",
+  "scripts": {
+    "start": "serve site -l ${PORT:-3000}"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}
