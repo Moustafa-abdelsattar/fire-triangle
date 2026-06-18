@@ -11,9 +11,9 @@ async function main() {
   if (!url) { console.error("DATABASE_URL not set"); process.exit(1); }
   const products = JSON.parse(fs.readFileSync(path.join(__dirname, "products.json"), "utf8"));
 
-  // Railway internal network needs no TLS; the public proxy uses a valid cert
-  // (keep verification on — never disable it).
-  const needsSsl = /sslmode=require/.test(url) || /proxy\.rlwy\.net/.test(url);
+  // Railway Postgres accepts non-TLS over both the private network and the TCP
+  // proxy; only opt into TLS (with verification) if the URL explicitly asks.
+  const needsSsl = /sslmode=require/.test(url);
   const client = new Client({ connectionString: url, ssl: needsSsl ? { rejectUnauthorized: true } : false });
   await client.connect();
   await client.query(`
