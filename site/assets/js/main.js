@@ -22,10 +22,7 @@
     if (header) {
       header.innerHTML =
         '<a class="logo" href="index.html" aria-label="Fire Triangle home">' +
-        '<svg viewBox="0 0 40 36" width="34" height="30" aria-hidden="true">' +
-        '<polygon points="20,3 3,33 37,33" fill="none" stroke="#DD3333" stroke-width="3"/>' +
-        '<polygon points="20,15 13,28 27,28" fill="#DD3333"/>' +
-        '</svg>' +
+        '<img class="logo__img" src="assets/img/logo.png" alt="Fire Triangle" width="44" height="41">' +
         '<span class="logo__word">FIRE&nbsp;TRIANGLE</span>' +
         '</a>' +
         '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">' +
@@ -149,6 +146,13 @@
   if (hash) {
     if (document.querySelector('[data-cat="' + hash + '"]')) window.filterProducts(hash);
     else if (document.querySelector('[data-proj="' + hash + '"]')) window.filterProjects(hash);
+  }
+
+  // Favicon (site-wide) using the real brand mark.
+  if (!document.querySelector('link[rel="icon"]')) {
+    var fav = document.createElement("link");
+    fav.rel = "icon"; fav.type = "image/png"; fav.href = "favicon.png";
+    document.head.appendChild(fav);
   }
 
   // Load the Ember AI assistant widget on every page.

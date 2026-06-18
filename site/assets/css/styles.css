@@ -84,6 +84,7 @@ a{color:inherit;text-decoration:none}
 .site-header{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:32px;
   padding:14px var(--gutter);background:rgba(43,42,38,.96);color:#fff;backdrop-filter:blur(6px);border-bottom:1px solid #3a3935}
 .logo{display:flex;align-items:center;gap:10px}
+.logo__img{height:42px;width:auto;display:block}
 .logo__word{font-family:var(--font-display);font-weight:600;letter-spacing:.04em;font-size:18px}
 .nav{display:flex;gap:22px;list-style:none}
 .nav a{font-family:var(--font-mono);font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#cfcfca;padding:6px 0;border-bottom:2px solid transparent}
@@ -183,7 +184,28 @@ a{color:inherit;text-decoration:none}
 .prod__cert{color:var(--molten)}
 .prod__name{font-size:18px;line-height:1.15}
 .prod__spec{font-size:13px;color:var(--ink);opacity:.72;margin:0}
+.prod{cursor:pointer}
+.prod:focus-visible{outline:2px solid var(--molten);outline-offset:2px}
+.prod__more{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:var(--molten);margin-top:auto;padding-top:8px}
 @media(max-width:560px){.catalogue{grid-template-columns:repeat(2,1fr)}.prod__body{padding:12px}.prod__name{font-size:15px}}
+
+/* ===== Product detail modal ===== */
+.pmodal{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px}
+.pmodal__backdrop{position:absolute;inset:0;background:rgba(20,19,17,.72)}
+.pmodal__box{position:relative;background:var(--white);max-width:760px;width:100%;max-height:90vh;overflow:auto;border:var(--rule);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.pmodal__close{position:absolute;top:8px;right:8px;z-index:2;width:40px;height:40px;border:0;background:rgba(0,0,0,.5);color:#fff;font-size:26px;line-height:1;cursor:pointer}
+.pmodal__close:hover{background:var(--molten)}
+.pmodal__content{display:grid;grid-template-columns:1fr 1fr}
+.pmodal__img{background:var(--paper)}
+.pmodal__img img{width:100%;height:100%;object-fit:contain;display:block}
+.pmodal__img--ph{display:grid;place-items:center;color:var(--hairline);min-height:240px}
+.pmodal__info{padding:28px}
+.pmodal__info h2{font-size:var(--step-2);margin:6px 0 4px}
+.pmodal__cert{color:var(--molten)}
+.pmodal__cat{font-family:var(--font-mono);font-size:12px;color:var(--steel);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.pmodal__specs{font-size:15px;line-height:1.6;margin-bottom:16px}
+.pmodal__note{font-size:12px;color:var(--steel);margin-bottom:20px}
+@media(max-width:600px){.pmodal__content{grid-template-columns:1fr}.pmodal__img{max-height:46vh}.pmodal__info{padding:20px}}
 
 /* ===== Admin (product manager) ===== */
 .admin__bar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:24px;padding-bottom:16px;border-bottom:var(--rule)}
