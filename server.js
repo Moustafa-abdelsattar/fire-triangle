@@ -34,7 +34,7 @@ SERVICES (three)
 - Maintenance: maintain all systems and supply spare parts under maintenance contracts, for all brands & systems.
 
 PRODUCTS
-- Fire alarm (addressable & conventional): sole agent for Velocity; also Advanced (Axis AX control panels & LCD annunciators), Apollo (XP95A smoke/heat/multicriteria detectors), Simplex, Notifier. Plus dual-action pull stations, sounder beacons, alarm bells (e.g. GB24-6).
+- Fire alarm (addressable & conventional): sole agent for Velocity and for Advanced (newly introduced to Egypt — Axis AX control panels & LCD annunciators); Apollo (XP95A smoke/heat/multicriteria detectors), Simplex, Notifier; dual-action pull stations, sounder beacons, alarm bells (GB24-6). Partner of FFE UK for special detection — Fireray beam detector, Talentum flame detector, Proreact linear heat detection.
 - Water systems: Rapidrop UK (UL/FM) — concealed/pendent/upright/sidewall sprinklers; zone control valves & trim (water flow switch, tamper switch, swing check valve, OS&Y gate valve, test & drain); grooved fittings (rigid couplings, mechanical & equal tees, 45°/90° elbows, concentric reducers, adaptor flanges); wet/dry/underground hydrants & foam-monitor hydrants; bladder tanks; fire hose reels, cabinets, hoses & nozzles. Waterfall (UL/FM) pumps — end-suction, horizontal split-case, turbine, jockey (300–5000 GPM) & pump sets, plus GVI/Clebasvision flow meters. CLA-VAL automatic control valves — pressure-reducing, relief, air-release, deluge, casing-relief, modulating-float.
 - Gas systems: FM-200 & CO₂ clean-agent (Tyco, Ceodeux, Ansul); Aerosol (FirePro, Mobiak); Fire extinguishers (Bavaria, Mobiak).
 - Foam systems for flammable-liquid / high-hazard risks.
@@ -42,7 +42,7 @@ PRODUCTS
 - Jianzhi: threaded malleable-iron pipe fittings for fire fighting pipework.
 
 PROJECTS
-- 487+ delivered across commercial, industrial and residential sectors. Named projects include: DP World (with contractor EDECS — Waterfall split-case pumps, 1500 GPM @ 10 bar); GLC Paints (Waterfall horizontal split-case pumps, 2500 & 1250 GPM); EGÜLSAN Egypt (Rapidrop 396-gallon foam bladder tank); Dakahlia Agricultural Development. A latest-projects PDF is available, and visitors can request references for their sector via Contact.
+- 487+ delivered across commercial, industrial and residential sectors. Named projects include: Cairo Airport Aircraft Hangar (24" Rapidrop OS&Y valve, via Triple A for Trading); DP World UAE (Waterfall horizontal split-case pump, via EDECS); GLC Paints (Waterfall pump system, delivered & inspected on-site); GÜLSAN Egypt Nonwoven Industries (Rapidrop 396-gallon bladder tank, UL listed); Dakahlia Agricultural Development (Waterfall split-case, 1500 GPM @ 9 bar); Souq El Habashi, Minya (Waterfall split-case, 1000 GPM @ 10 bar). A latest-projects PDF is available, and visitors can request references for their sector via Contact.
 - Fire Triangle is a Diamond Sponsor of Egypt Energy – Firex 2026, and has exhibited at Firex since 2021.
 
 CAREERS
