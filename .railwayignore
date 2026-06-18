@@ -1,6 +1,7 @@
 .playwright-mcp/
 docs/
-*.png
-*.jpeg
-*.jpg
 node_modules/
+# Exclude only ROOT-level screenshot artifacts, not product images in site/assets
+/*.png
+/*.jpeg
+/*.jpg
