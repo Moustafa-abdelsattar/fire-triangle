@@ -28,12 +28,33 @@
         '</svg>' +
         '<span class="logo__word">FIRE&nbsp;TRIANGLE</span>' +
         '</a>' +
-        '<nav aria-label="Primary"><ul class="nav">' +
+        '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">' +
+        '<span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>' +
+        '</button>' +
+        '<nav id="primary-nav" aria-label="Primary"><ul class="nav">' +
         NAV.map(function (p) {
           return '<li><a href="' + p[0] + '.html"' + (p[0] === active ? ' aria-current="page"' : '') + '>' + p[1] + '</a></li>';
         }).join("") +
+        '<li class="nav__cta"><a class="btn btn--primary" href="contact.html">Request a quote</a></li>' +
         '</ul></nav>' +
         '<a class="btn btn--primary header__cta" href="contact.html">Request a quote</a>';
+
+      var navToggle = header.querySelector(".nav-toggle");
+      var primaryNav = header.querySelector("#primary-nav");
+      if (navToggle && primaryNav) {
+        navToggle.addEventListener("click", function () {
+          var open = header.classList.toggle("nav-open");
+          navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+          navToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+        });
+        primaryNav.addEventListener("click", function (e) {
+          if (e.target.closest("a")) {
+            header.classList.remove("nav-open");
+            navToggle.setAttribute("aria-expanded", "false");
+            navToggle.setAttribute("aria-label", "Open menu");
+          }
+        });
+      }
     }
     var footer = document.getElementById("site-footer");
     if (footer) {
