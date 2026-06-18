@@ -191,6 +191,7 @@ a{color:inherit;text-decoration:none}
   height:min(560px,calc(100vh - 120px));display:flex;flex-direction:column;overflow:hidden;
   background:var(--ash);color:#ece9e4;border:1px solid #3a3935;border-radius:14px;
   box-shadow:0 24px 60px rgba(0,0,0,.45);animation:ember-in .22s ease}
+.ember__panel[hidden]{display:none}
 @keyframes ember-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .ember__head{display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:14px 16px;background:linear-gradient(180deg,#332f2a,#2b2a26);border-bottom:1px solid #3a3935}

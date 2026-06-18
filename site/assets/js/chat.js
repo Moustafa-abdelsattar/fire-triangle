@@ -7,7 +7,7 @@
   window.__emberLoaded = true;
 
   var GREETING =
-    "Hi, I'm Ember — Fire Triangle's assistant. Ask me about our products, services, certifications, or how to get a quote.";
+    "Hi! I'm the Fire Triangle assistant. Ask me about our products, services, certifications, or how to get a quote.";
   var CHIPS = ["What products do you supply?", "Which brands are you agent for?", "Where are you located?", "Request a quote"];
 
   var history = []; // {role, content}
@@ -17,24 +17,24 @@
   var root = document.createElement("div");
   root.className = "ember";
   root.innerHTML =
-    '<button class="ember__launch" type="button" aria-label="Open chat with Ember" aria-expanded="false">' +
+    '<button class="ember__launch" type="button" aria-label="Open chat" aria-expanded="false">' +
       '<svg class="ember__tri" viewBox="0 0 40 36" width="26" height="24" aria-hidden="true">' +
         '<polygon points="20,3 3,33 37,33" fill="none" stroke="currentColor" stroke-width="3"/>' +
         '<polygon points="20,15 13,28 27,28" fill="currentColor"/></svg>' +
       '<span class="ember__pulse" aria-hidden="true"></span>' +
     '</button>' +
-    '<section class="ember__panel" role="dialog" aria-label="Chat with Ember" hidden>' +
+    '<section class="ember__panel" role="dialog" aria-label="Chat with Fire Triangle assistant" hidden>' +
       '<header class="ember__head">' +
         '<div class="ember__id">' +
           '<svg viewBox="0 0 40 36" width="22" height="20" aria-hidden="true"><polygon points="20,3 3,33 37,33" fill="none" stroke="currentColor" stroke-width="3"/><polygon points="20,15 13,28 27,28" fill="currentColor"/></svg>' +
-          '<div><strong>Ember</strong><span class="ember__status">Fire Triangle assistant · online</span></div>' +
+          '<div><strong>Fire Triangle Assistant</strong><span class="ember__status">Online</span></div>' +
         '</div>' +
         '<button class="ember__close" type="button" aria-label="Close chat">×</button>' +
       '</header>' +
       '<div class="ember__log" aria-live="polite"></div>' +
       '<div class="ember__chips"></div>' +
       '<form class="ember__form">' +
-        '<input class="ember__input" type="text" autocomplete="off" placeholder="Ask Ember…" aria-label="Type your message" maxlength="500">' +
+        '<input class="ember__input" type="text" autocomplete="off" placeholder="Ask us anything…" aria-label="Type your message" maxlength="500">' +
         '<button class="ember__send" type="submit" aria-label="Send">→</button>' +
       '</form>' +
       '<p class="ember__disclaimer">AI assistant · for exact specs &amp; pricing, request a quote.</p>' +

@@ -13,7 +13,7 @@ const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 const KEY = process.env.OPENROUTER_API_KEY;
 
 // ---- Assistant persona + knowledge base (kept current with the site) ----
-const SYSTEM_PROMPT = `You are "Ember", the friendly AI guide for Fire Triangle — a fire-protection company in Egypt. You live on firetriangle.net and help visitors understand the company, its products and services, and how to get in touch.
+const SYSTEM_PROMPT = `You are the Fire Triangle Assistant, a friendly AI guide for Fire Triangle — a fire-protection company in Egypt. You live on firetriangle.net and help visitors understand the company, its products and services, and how to get in touch.
 
 PERSONA & STYLE
 - Warm, confident, concise. Default to 2–4 short sentences; use a tight bullet list only when listing products/options.
@@ -104,7 +104,7 @@ app.post("/api/chat", async (req, res) => {
     if (!r.ok) {
       const detail = await r.text();
       console.error("OpenRouter error", r.status, detail.slice(0, 500));
-      return res.status(502).json({ error: "Ember is busy right now — please try again in a moment." });
+      return res.status(502).json({ error: "The assistant is busy right now — please try again in a moment." });
     }
     const data = await r.json();
     const reply = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
