@@ -131,8 +131,10 @@ app.get("/api/products", async (req, res) => {
   if (url) {
     try {
       const { Client } = require("pg");
-      const needsSsl = /sslmode=require/.test(url) || /proxy\.rlwy\.net/.test(url);
-      const c = new Client({ connectionString: url, ssl: needsSsl ? { rejectUnauthorized: true } : false });
+      // Private network (*.railway.internal) is safe plain; any public host gets TLS
+      // (Railway's managed Postgres uses a self-signed cert, so verification is relaxed).
+      const isPrivate = /\.railway\.internal(?::|\/|$)/.test(url);
+      const c = new Client({ connectionString: url, ssl: isPrivate ? false : { rejectUnauthorized: false } });
       await c.connect();
       const { rows } = await c.query(
         "SELECT name, brand, category, certifications, specs, image FROM products ORDER BY (image IS NULL), category, id"
