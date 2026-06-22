@@ -24,12 +24,13 @@
       '</div>';
     buildForm();
     paint();
-    // export wiring is added in Task 7
+    document.getElementById("poster-download").addEventListener("click", exportPng);
+    document.getElementById("poster-save").addEventListener("click", saveToMedia);
   }
 
   function stageHTML() {
     var bullets = state.bullets.filter(function (b) { return b && b.trim(); })
-      .map(function (b) { return '<li>' + esc(b) + '</li>'; }).join("");
+      .map(function (b) { return '<li><span class="pz-bullet">&#9658;</span>' + esc(b) + '</li>'; }).join("");
     var badges =
       (state.fm ? '<span class="pz-fm"><b>FM</b><i>APPROVED</i></span>' : "") +
       (state.rapidrop ? '<img class="pz-rd" src="/assets/img/brand-rapidrop.webp" alt="Rapidrop">' : "");
@@ -82,6 +83,50 @@
     });
   }
   function bind(id, key) { document.getElementById(id).addEventListener("input", function () { state[key] = this.value; paint(); }); }
+
+  function rasterize() {
+    var stage = document.getElementById("poster-stage");
+    var scaleEl = document.getElementById("poster-scale");
+    return (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve())
+      .then(function () {
+        // Temporarily reset the CSS scale transform so html2canvas sees the full
+        // 1080×1080 stage at 1:1 (avoids elements positioned outside the clipped
+        // viewport due to the scale-down used for preview).
+        var prevTransform = scaleEl ? scaleEl.style.transform : "";
+        var prevHeight = scaleEl ? scaleEl.style.height : "";
+        if (scaleEl) { scaleEl.style.transform = "scale(1)"; scaleEl.style.height = "1080px"; }
+        return window.html2canvas(stage, { width: 1080, height: 1080, scale: 1, backgroundColor: null, useCORS: true })
+          .then(function (canvas) {
+            if (scaleEl) { scaleEl.style.transform = prevTransform; scaleEl.style.height = prevHeight; }
+            return canvas;
+          }, function (err) {
+            if (scaleEl) { scaleEl.style.transform = prevTransform; scaleEl.style.height = prevHeight; }
+            throw err;
+          });
+      });
+  }
+  function exportPng() {
+    document.getElementById("poster-msg").textContent = "Rendering…";
+    rasterize().then(function (canvas) {
+      var a = document.createElement("a");
+      a.download = (state.title || "poster").replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      document.getElementById("poster-msg").textContent = "Downloaded ✓";
+    }).catch(function (e) { document.getElementById("poster-msg").textContent = "Export failed: " + e.message; });
+  }
+  function saveToMedia() {
+    document.getElementById("poster-msg").textContent = "Rendering…";
+    rasterize().then(function (canvas) {
+      var data = canvas.toDataURL("image/png").split(",")[1];
+      return A.api("/api/admin/upload", { method: "POST", body: JSON.stringify({ mime: "image/png", data: data }) });
+    }).then(function (res) {
+      if (res && res.data && res.data.url) {
+        document.getElementById("poster-msg").textContent = "Saved to Media ✓ (" + res.data.url + ")";
+        if (A.media) A.media.refresh();
+      } else { document.getElementById("poster-msg").textContent = (res && res.data && res.data.error) || "Save failed."; }
+    }).catch(function (e) { document.getElementById("poster-msg").textContent = "Save failed: " + e.message; });
+  }
 
   window.addEventListener("resize", function () { if (document.getElementById("poster-stage")) fitStage(); });
   A.poster = { stageEl: function () { return document.getElementById("poster-stage"); }, state: state };
