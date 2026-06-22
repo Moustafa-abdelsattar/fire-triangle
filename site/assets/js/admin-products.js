@@ -42,7 +42,7 @@
         '<button class="chip' + (activeCat === "" ? " is-active" : "") + '" data-cat="">All</button>' +
         cats.map(function (c) { return '<button class="chip' + (activeCat === c ? " is-active" : "") + '" data-cat="' + esc(c) + '">' + esc(c) + '</button>'; }).join("");
       paint();
-    });
+    }).catch(function () { document.getElementById("admin-count").textContent = "Failed to load products."; });
   }
   function paint() {
     var q = (document.getElementById("prod-search").value || "").toLowerCase();
@@ -80,7 +80,13 @@
     document.getElementById("prod-search").addEventListener("input", paint);
     document.getElementById("cat-chips").addEventListener("click", function (e) {
       var c = e.target.closest(".chip"); if (!c) return;
-      activeCat = c.getAttribute("data-cat"); load();
+      activeCat = c.getAttribute("data-cat");
+      var chips = document.getElementById("cat-chips").querySelectorAll(".chip");
+      for (var i = 0; i < chips.length; i++) {
+        if (chips[i].getAttribute("data-cat") === activeCat) { chips[i].classList.add("is-active"); }
+        else { chips[i].classList.remove("is-active"); }
+      }
+      paint();
     });
     document.getElementById("cancel-btn").addEventListener("click", function () {
       fillForm(null); document.getElementById("form-msg").textContent = ""; document.getElementById("p-file").value = "";
