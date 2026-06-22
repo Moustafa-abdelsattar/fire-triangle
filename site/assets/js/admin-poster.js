@@ -31,7 +31,7 @@
     var bullets = state.bullets.filter(function (b) { return b && b.trim(); })
       .map(function (b) { return '<li>' + esc(b) + '</li>'; }).join("");
     var badges =
-      (state.fm ? '<span class="pz-badge pz-fm"><b>FM</b><i>APPROVED</i></span>' : "") +
+      (state.fm ? '<span class="pz-fm"><b>FM</b><i>APPROVED</i></span>' : "") +
       (state.rapidrop ? '<img class="pz-rd" src="/assets/img/brand-rapidrop.webp" alt="Rapidrop">' : "");
     var phones = esc(state.phones).split("\n").join("<br>");
     return '' +
