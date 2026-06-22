@@ -24,7 +24,7 @@
       var count = document.getElementById("media-count");
       if (count) count.textContent = images.length + " images";
       if (grid) grid.innerHTML = images.map(tile).join("") || "<p>No images yet.</p>";
-    });
+    }).catch(function () { var m = document.getElementById("media-msg"); if (m) m.textContent = "Failed to load images."; });
   }
   function tile(im) {
     var url = "/img/" + esc(im.id);
@@ -89,7 +89,7 @@
             return '<figure class="media__tile media__tile--pick" data-pick-id="' + esc(im.id) + '"><img src="/img/' + esc(im.id) + '" alt=""><figcaption>' + esc(im.label || "") + '</figcaption></figure>';
           }).join("") + '</div></div>';
         modal.addEventListener("click", function (e) {
-          if (e.target.closest('[data-pick="cancel"]') || e.target === modal) finish(null);
+          if (e.target.closest('[data-pick="cancel"]') || e.target === modal) { finish(null); return; }
           var t = e.target.closest("[data-pick-id]"); if (t) finish("/img/" + t.getAttribute("data-pick-id"));
         });
         document.body.appendChild(modal);
