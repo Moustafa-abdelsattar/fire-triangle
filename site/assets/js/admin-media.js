@@ -39,9 +39,17 @@
       '<button class="btn btn--ghost btn--sm" data-act="del">Delete</button></div></figure>';
   }
   function countUsedBy(id) {
-    var prods = A.products() || [];
+    var prods = A.products();
+    if (!prods) return -1; // unknown — Products section never opened or its fetch failed
     var u = "/img/" + id;
     return prods.filter(function (p) { return p.image === u; }).length;
+  }
+  function ensureProducts(cb) {
+    if (A.products()) { cb(); return; }
+    fetch("/api/products").then(function (r) { return r.json(); }).then(function (data) {
+      if (data && data.products) A.setProducts(data.products);
+      cb();
+    }).catch(function () { cb(); });
   }
   function onGridClick(e) {
     var btn = e.target.closest("button[data-act]"); if (!btn) return;
@@ -54,10 +62,15 @@
       A.api("/api/admin/images/" + id, { method: "PATCH", body: JSON.stringify({ label: label }) })
         .then(function () { A.toast("Renamed"); });
     } else if (act === "del") {
-      var used = countUsedBy(id);
-      var warn = used ? ("This image is used by " + used + " product(s). Delete anyway?") : "Delete this image?";
-      if (!confirm(warn)) return;
-      A.api("/api/admin/images/" + id, { method: "DELETE" }).then(function () { A.toast("Deleted"); refresh(); });
+      ensureProducts(function () {
+        var used = countUsedBy(id);
+        var warn;
+        if (used < 0) warn = "Couldn't verify product usage. Delete anyway?";
+        else if (used > 0) warn = "This image is used by " + used + " product(s). Delete anyway?";
+        else warn = "Delete this image?";
+        if (!confirm(warn)) return;
+        A.api("/api/admin/images/" + id, { method: "DELETE" }).then(function () { A.toast("Deleted"); refresh(); });
+      });
     }
   }
   function upload() {
