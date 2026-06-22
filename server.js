@@ -4,13 +4,16 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
+const { imageId } = require("./lib/image-id");
 
 const app = express();
 app.disable("x-powered-by");
+app.use((req, res, next) => { res.set("X-Content-Type-Options", "nosniff"); next(); });
 // Normal routes use a tight JSON limit; the image-upload route needs more headroom.
 app.use((req, res, next) => (req.path === "/api/admin/upload" ? next() : express.json({ limit: "32kb" })(req, res, next)));
 
 const SITE = path.join(__dirname, "site");
+const IMAGE_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 const KEY = process.env.OPENROUTER_API_KEY;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -30,6 +33,18 @@ function dbClient() {
   const { Client } = require("pg");
   const url = process.env.DATABASE_URL;
   return new Client({ connectionString: url, ssl: pgSslFor(url) });
+}
+
+async function ensureSchema() {
+  if (!process.env.DATABASE_URL) return;
+  const c = dbClient();
+  try {
+    await c.connect();
+    await c.query("CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, mime TEXT NOT NULL, bytes BYTEA NOT NULL, created_at TIMESTAMPTZ DEFAULT now())");
+    await c.query("ALTER TABLE images ADD COLUMN IF NOT EXISTS label TEXT");
+    console.log("schema ensured");
+  } catch (e) { console.error("ensureSchema failed:", e.message); }
+  finally { try { await c.end(); } catch (e) {} }
 }
 
 // Constant-time-ish compare for the admin bearer token.
@@ -217,31 +232,44 @@ app.put("/api/admin/products/:id", async (req, res) => {
 app.post("/api/admin/upload", express.json({ limit: "8mb" }), async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
   const { mime, data } = req.body || {};
-  const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  const allowed = IMAGE_MIME;
   if (allowed.indexOf(mime) < 0 || typeof data !== "string") return res.status(400).json({ error: "Unsupported image type." });
   let buf;
   try { buf = Buffer.from(data, "base64"); } catch (e) { return res.status(400).json({ error: "Bad image data." }); }
   if (!buf.length || buf.length > 5 * 1024 * 1024) return res.status(400).json({ error: "Image must be 1 byte–5 MB." });
   const id = require("crypto").randomBytes(8).toString("hex");
   await withDb(res, async (c) => {
-    await c.query("CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, mime TEXT NOT NULL, bytes BYTEA NOT NULL, created_at TIMESTAMPTZ DEFAULT now())");
     await c.query("INSERT INTO images (id, mime, bytes) VALUES ($1,$2,$3)", [id, mime, buf]);
     res.json({ ok: true, url: "/img/" + id });
   });
 });
 app.get("/img/:id", async (req, res) => {
   if (!process.env.DATABASE_URL) return res.status(404).end();
-  const id = String(req.params.id).replace(/[^a-f0-9]/g, "").slice(0, 32);
+  const id = imageId(req.params.id);
   const c = dbClient();
   try {
     await c.connect();
     const { rows } = await c.query("SELECT mime, bytes FROM images WHERE id=$1", [id]);
     if (!rows.length) return res.status(404).end();
-    res.set("Content-Type", rows[0].mime);
+    if (IMAGE_MIME.indexOf(rows[0].mime) < 0) {
+      res.set("Content-Type", "application/octet-stream");
+      res.set("Content-Disposition", "attachment");
+    } else {
+      res.set("Content-Type", rows[0].mime);
+    }
     res.set("Cache-Control", "public, max-age=31536000, immutable");
     res.send(rows[0].bytes);
   } catch (e) { console.error("img serve:", e.message); res.status(500).end(); }
   finally { try { await c.end(); } catch (e) {} }
+});
+app.get("/api/admin/images", async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
+  await withDb(res, async (c) => {
+    const { rows } = await c.query(
+      "SELECT id, label, mime, octet_length(bytes) AS size, created_at FROM images ORDER BY created_at DESC, id"
+    );
+    res.json({ images: rows });
+  });
 });
 app.delete("/api/admin/products/:id", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
@@ -258,4 +286,7 @@ app.use(express.static(SITE, { extensions: ["html"] }));
 app.use((req, res) => res.status(404).sendFile(path.join(SITE, "index.html")));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Fire Triangle on :${PORT} (model ${MODEL}, key ${KEY ? "set" : "MISSING"})`));
+app.listen(PORT, () => {
+  console.log(`Fire Triangle on :${PORT} (model ${MODEL}, key ${KEY ? "set" : "MISSING"})`);
+  ensureSchema();
+});
