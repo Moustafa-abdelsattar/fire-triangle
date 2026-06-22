@@ -5,10 +5,18 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const { imageId } = require("./lib/image-id");
+const { tokensMatch } = require("./lib/admin-auth");
 
 const app = express();
+app.set("trust proxy", 1); // trust Railway's single-hop proxy so req.ip is the real client
 app.disable("x-powered-by");
-app.use((req, res, next) => { res.set("X-Content-Type-Options", "nosniff"); next(); });
+app.use((req, res, next) => {
+  res.set("X-Content-Type-Options", "nosniff");
+  res.set("X-Frame-Options", "SAMEORIGIN");
+  res.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  next();
+});
 // Normal routes use a tight JSON limit; the image-upload route needs more headroom.
 app.use((req, res, next) => (req.path === "/api/admin/upload" ? next() : express.json({ limit: "32kb" })(req, res, next)));
 
@@ -47,14 +55,10 @@ async function ensureSchema() {
   finally { try { await c.end(); } catch (e) {} }
 }
 
-// Constant-time-ish compare for the admin bearer token.
 function adminOk(req) {
   if (!ADMIN_PASSWORD) return false;
   const t = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
-  if (t.length !== ADMIN_PASSWORD.length) return false;
-  let diff = 0;
-  for (let i = 0; i < t.length; i++) diff |= t.charCodeAt(i) ^ ADMIN_PASSWORD.charCodeAt(i);
-  return diff === 0;
+  return tokensMatch(t, ADMIN_PASSWORD);
 }
 function cleanStr(v, max) { var s = v == null ? null : String(v).trim(); if (s === "") s = null; return s == null ? null : s.slice(0, max || 400); }
 
@@ -110,14 +114,16 @@ function rateLimited(ip) {
   const arr = (HITS.get(ip) || []).filter((t) => now - t < WINDOW_MS);
   arr.push(now);
   HITS.set(ip, arr);
-  if (HITS.size > 5000) HITS.clear(); // crude memory guard
+  if (HITS.size > 5000) {
+    for (const [k, ts] of HITS) { if (!ts.length || now - ts[ts.length - 1] >= WINDOW_MS) HITS.delete(k); }
+  }
   return arr.length > MAX_PER_WINDOW;
 }
 
 app.post("/api/chat", async (req, res) => {
   if (!KEY) return res.status(503).json({ error: "The assistant isn't configured yet." });
 
-  const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "?").toString().split(",")[0].trim();
+  const ip = req.ip || "?";
   if (rateLimited(ip)) return res.status(429).json({ error: "You're sending messages too quickly — give me a moment." });
 
   const incoming = Array.isArray(req.body && req.body.messages) ? req.body.messages : [];
@@ -229,7 +235,7 @@ app.put("/api/admin/products/:id", async (req, res) => {
     res.json({ ok: rowCount > 0 });
   });
 });
-app.post("/api/admin/upload", express.json({ limit: "8mb" }), async (req, res) => {
+app.post("/api/admin/upload", express.json({ limit: "7mb" }), async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
   const { mime, data } = req.body || {};
   const allowed = IMAGE_MIME;
