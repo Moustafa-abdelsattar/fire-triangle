@@ -271,6 +271,27 @@ app.get("/api/admin/images", async (req, res) => {
     res.json({ images: rows });
   });
 });
+app.patch("/api/admin/images/:id", async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
+  const id = imageId(req.params.id);
+  if (!id) return res.status(400).json({ error: "bad id" });
+  // NOTE (security M3): cleanStr only trims/truncates — `label` is stored as RAW text.
+  // Every consumer MUST HTML-escape it before DOM insertion (the admin grid uses esc()).
+  const label = cleanStr((req.body || {}).label, 120);
+  await withDb(res, async (c) => {
+    const { rowCount } = await c.query("UPDATE images SET label=$1 WHERE id=$2", [label, id]);
+    res.json({ ok: rowCount > 0 });
+  });
+});
+app.delete("/api/admin/images/:id", async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
+  const id = imageId(req.params.id);
+  if (!id) return res.status(400).json({ error: "bad id" });
+  await withDb(res, async (c) => {
+    const { rowCount } = await c.query("DELETE FROM images WHERE id=$1", [id]);
+    res.json({ ok: rowCount > 0 });
+  });
+});
 app.delete("/api/admin/products/:id", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
   const id = parseInt(req.params.id, 10);
