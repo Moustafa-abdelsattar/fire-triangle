@@ -578,6 +578,8 @@ app.patch("/api/admin/images/:id", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
   const id = imageId(req.params.id);
   if (!id) return res.status(400).json({ error: "bad id" });
+  // NOTE (security M3): cleanStr only trims/truncates — `label` is stored as RAW text.
+  // Every consumer MUST HTML-escape it before DOM insertion (the admin grid uses esc()).
   const label = cleanStr((req.body || {}).label, 120);
   await withDb(res, async (c) => {
     const { rowCount } = await c.query("UPDATE images SET label=$1 WHERE id=$2", [label, id]);
