@@ -20,6 +20,7 @@
       '<label>Specs / variations<input id="p-specs" maxlength="600"></label>' +
       '<label>Upload image (jpg/png/webp, max 5 MB)<input type="file" id="p-file" accept="image/*"></label>' +
       '<label>Image path or URL<input id="p-image" maxlength="300" placeholder="/assets/img/products/example.jpg"></label>' +
+      '<button class="btn btn--ghost btn--sm" type="button" id="pick-media">Pick from Media library</button>' +
       '<div class="hero__cta"><button class="btn btn--primary" type="submit" id="save-btn">Add product</button>' +
       '<button class="btn btn--ghost" type="button" id="cancel-btn" hidden>Cancel edit</button></div>' +
       '<p class="form__note" id="form-msg"></p></form>' +
@@ -90,6 +91,9 @@
     });
     document.getElementById("cancel-btn").addEventListener("click", function () {
       fillForm(null); document.getElementById("form-msg").textContent = ""; document.getElementById("p-file").value = "";
+    });
+    document.getElementById("pick-media").addEventListener("click", function () {
+      A.media.pick().then(function (url) { if (url) document.getElementById("p-image").value = url; });
     });
     document.getElementById("p-file").addEventListener("change", function () {
       var f = this.files && this.files[0]; if (!f) return;
