@@ -455,12 +455,51 @@ Run: `npm test`
 For `strips non-hex characters`: `"../../etc/passwd"` → keep `[a-f0-9]` → `"ecaed"` (e,c,a,e,d from "etc" + "passwd": e,t,c,p,a,s,s,w,d → e,c,a,d). Recompute precisely from the actual string and set the assertion to the printed `actual` value, then re-run.
 Expected: PASS (5 tests).
 
-- [ ] **Step 5: Use `imageId` in `server.js` and add the `label` bootstrap**
+- [ ] **Step 5: Wire `imageId`, add a startup schema migration, and harden `/img/:id` (security: M2 + H1)**
 
-In `server.js`, after the `require("fs")` line add:
+Security context: the per-request `CREATE TABLE`/`ALTER TABLE` DDL the original draft put in handlers takes table locks on every call (security finding M2) — move it to a one-time startup migration. And `/img/:id` echoes the stored `mime` verbatim with no `nosniff`, allowing content-sniffing/stored-XSS if a non-image ever lands in the table (finding H1) — re-validate at serve time + send `nosniff` globally.
+
+In `server.js`, after the `const fs = require("fs");` line add:
 
 ```js
 const { imageId } = require("./lib/image-id");
+```
+
+After the `const SITE = ...` line add the shared MIME allowlist (reused by upload + serve):
+
+```js
+const IMAGE_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+```
+
+Just after `app.disable("x-powered-by");` add a global `nosniff` header:
+
+```js
+app.use((req, res, next) => { res.set("X-Content-Type-Options", "nosniff"); next(); });
+```
+
+Add a one-time startup migration function near `dbClient`:
+
+```js
+async function ensureSchema() {
+  if (!process.env.DATABASE_URL) return;
+  const c = dbClient();
+  try {
+    await c.connect();
+    await c.query("CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, mime TEXT NOT NULL, bytes BYTEA NOT NULL, created_at TIMESTAMPTZ DEFAULT now())");
+    await c.query("ALTER TABLE images ADD COLUMN IF NOT EXISTS label TEXT");
+    console.log("schema ensured");
+  } catch (e) { console.error("ensureSchema failed:", e.message); }
+  finally { try { await c.end(); } catch (e) {} }
+}
+```
+
+Change the `app.listen(...)` call at the bottom to run it once at startup:
+
+```js
+app.listen(PORT, () => {
+  console.log(`Fire Triangle on :${PORT} (model ${MODEL}, key ${KEY ? "set" : "MISSING"})`);
+  ensureSchema();
+});
 ```
 
 In the `/img/:id` handler, replace:
@@ -475,20 +514,31 @@ with:
   const id = imageId(req.params.id);
 ```
 
-In the `/api/admin/upload` handler, after the `CREATE TABLE IF NOT EXISTS images ...` line add:
+and replace the content-type line:
 
 ```js
-    await c.query("ALTER TABLE images ADD COLUMN IF NOT EXISTS label TEXT");
+    res.set("Content-Type", rows[0].mime);
 ```
 
-- [ ] **Step 6: Add `GET /api/admin/images` (place near the other admin routes)**
+with serve-time re-validation (anything not in the image allowlist is forced to a safe download, never sniffed/executed):
+
+```js
+    if (IMAGE_MIME.indexOf(rows[0].mime) < 0) {
+      res.set("Content-Type", "application/octet-stream");
+      res.set("Content-Disposition", "attachment");
+    } else {
+      res.set("Content-Type", rows[0].mime);
+    }
+```
+
+In the existing `/api/admin/upload` handler: change the allowlist line `const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];` to reuse the shared constant `const allowed = IMAGE_MIME;`, and **remove** the per-request `await c.query("CREATE TABLE IF NOT EXISTS images ...")` line inside that handler (schema is now ensured at startup). Leave the `INSERT` untouched.
+
+- [ ] **Step 6: Add `GET /api/admin/images` (place near the other admin routes; NO per-request DDL — schema is ensured at startup)**
 
 ```js
 app.get("/api/admin/images", async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
   await withDb(res, async (c) => {
-    await c.query("CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, mime TEXT NOT NULL, bytes BYTEA NOT NULL, created_at TIMESTAMPTZ DEFAULT now())");
-    await c.query("ALTER TABLE images ADD COLUMN IF NOT EXISTS label TEXT");
     const { rows } = await c.query(
       "SELECT id, label, mime, octet_length(bytes) AS size, created_at FROM images ORDER BY created_at DESC, id"
     );
@@ -985,6 +1035,174 @@ Click **Save to Media**. Expected: msg "Saved to Media ✓ (/img/…)". Switch t
 ```bash
 git add site/assets/js/admin-poster.js
 git commit -m "feat(admin): poster PNG export (download + save to media library)"
+```
+
+---
+
+## Phase 4 — Server security hardening (from the 2026-06-23 security review)
+
+### Task 7: Harden existing server code (H2, M1, L1, L2, L4)
+
+**Files:**
+- Create: `lib/admin-auth.js`
+- Create: `test/admin-auth.test.js`
+- Modify: `server.js`
+
+**Interfaces:**
+- Produces: `lib/admin-auth.js` exporting `tokensMatch(provided, expected) -> boolean` — constant-time compare with no length-based early return and no length leak.
+- Consumes: the `nosniff` headers middleware added in Task 2 Step 5 (this task expands it to the full header set).
+
+Context: these are fixes to pre-existing `server.js` code flagged by the security review. Do them after the feature tasks so this is the only task editing these regions. The image-serve hardening + startup migration + `nosniff` were already done in Task 2 — do NOT redo them; this task only adds what's listed below.
+
+- [ ] **Step 1: Write the failing test for `tokensMatch`**
+
+Create `test/admin-auth.test.js`:
+
+```js
+const test = require("node:test");
+const assert = require("node:assert");
+const { tokensMatch } = require("../lib/admin-auth");
+
+test("equal tokens match", () => {
+  assert.strictEqual(tokensMatch("s3cret-token", "s3cret-token"), true);
+});
+test("different same-length tokens do not match", () => {
+  assert.strictEqual(tokensMatch("aaaaaa", "bbbbbb"), false);
+});
+test("different-length tokens do not match", () => {
+  assert.strictEqual(tokensMatch("short", "longertoken"), false);
+});
+test("empty provided token never matches a real password", () => {
+  assert.strictEqual(tokensMatch("", "realpw"), false);
+});
+test("does not throw on tokens longer than the fixed buffer", () => {
+  assert.strictEqual(tokensMatch("x".repeat(500), "realpw"), false);
+});
+```
+
+- [ ] **Step 2: Run it to verify it fails**
+
+Run: `npm test`
+Expected: FAIL — `Cannot find module '../lib/admin-auth'`.
+
+- [ ] **Step 3: Implement `lib/admin-auth.js`**
+
+```js
+// Constant-time admin token compare. No early length return (no length-leak
+// timing oracle): both sides are copied into a fixed 256-byte canvas, compared
+// with crypto.timingSafeEqual, then an exact-length check rejects padded matches.
+const crypto = require("crypto");
+function tokensMatch(provided, expected) {
+  const p = String(provided == null ? "" : provided);
+  const e = String(expected == null ? "" : expected);
+  if (!e) return false;
+  const a = Buffer.alloc(256), b = Buffer.alloc(256);
+  Buffer.from(p).copy(a); Buffer.from(e).copy(b);
+  const eq = crypto.timingSafeEqual(a, b);
+  return eq && p.length === e.length;
+}
+module.exports = { tokensMatch };
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `npm test`
+Expected: PASS (the `image-id` tests plus the 5 new `admin-auth` tests).
+
+- [ ] **Step 5: Use `tokensMatch` in `adminOk` (M1)**
+
+In `server.js`, add near the other requires:
+
+```js
+const { tokensMatch } = require("./lib/admin-auth");
+```
+
+Replace the body of `adminOk` with:
+
+```js
+function adminOk(req) {
+  if (!ADMIN_PASSWORD) return false;
+  const t = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
+  return tokensMatch(t, ADMIN_PASSWORD);
+}
+```
+
+- [ ] **Step 6: Fix the rate-limiter IP source (H2) and eviction (L1)**
+
+In `server.js`, just after `const app = express();` add:
+
+```js
+app.set("trust proxy", 1); // trust Railway's single-hop proxy so req.ip is the real client
+```
+
+In the `/api/chat` handler, replace the `ip` derivation:
+
+```js
+  const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "?").toString().split(",")[0].trim();
+```
+
+with:
+
+```js
+  const ip = req.ip || "?";
+```
+
+In `rateLimited`, replace the blunt overflow clear:
+
+```js
+  if (HITS.size > 5000) HITS.clear(); // crude memory guard
+```
+
+with stale-entry eviction (never wipes active counters):
+
+```js
+  if (HITS.size > 5000) {
+    for (const [k, ts] of HITS) { if (!ts.length || now - ts[ts.length - 1] >= WINDOW_MS) HITS.delete(k); }
+  }
+```
+
+- [ ] **Step 7: Expand security headers (L2) and tighten the upload body limit (L4)**
+
+In `server.js`, replace the `nosniff`-only middleware added in Task 2:
+
+```js
+app.use((req, res, next) => { res.set("X-Content-Type-Options", "nosniff"); next(); });
+```
+
+with the full header set:
+
+```js
+app.use((req, res, next) => {
+  res.set("X-Content-Type-Options", "nosniff");
+  res.set("X-Frame-Options", "SAMEORIGIN");
+  res.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  next();
+});
+```
+
+In the `/api/admin/upload` route definition, change the body limit from `"8mb"` to `"7mb"` (a 5 MB binary is ~6.67 MB base64; 7 MB keeps headroom without accepting 8 MB of garbage):
+
+```js
+app.post("/api/admin/upload", express.json({ limit: "7mb" }), async (req, res) => {
+```
+
+- [ ] **Step 8: Verify**
+
+Run `npm test` → all `image-id` + `admin-auth` tests pass, output pristine.
+Boot locally with `ADMIN_PASSWORD=devtest PORT=3000 node server.js`:
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer devtest" http://localhost:3000/api/admin/check   # 200
+curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer wrong"  http://localhost:3000/api/admin/check   # 401
+curl -s -D - -o /dev/null http://localhost:3000/ | grep -i "x-content-type-options\|x-frame-options\|referrer-policy\|strict-transport"   # all four present
+```
+Expected: 200 / 401, and the four security headers appear on responses. Kill the server.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add lib/admin-auth.js test/admin-auth.test.js server.js
+git commit -m "security: constant-time admin compare, trust-proxy rate-limit key, header set, tighter upload limit (review H2/M1/L1/L2/L4)"
 ```
 
 ---
