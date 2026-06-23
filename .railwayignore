@@ -1,4 +1,6 @@
 .playwright-mcp/
+.git/
+.superpowers/
 docs/
 node_modules/
 # Exclude only ROOT-level screenshot artifacts, not product images in site/assets
