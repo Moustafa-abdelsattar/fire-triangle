@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const { imageId } = require("./lib/image-id");
 const { tokensMatch } = require("./lib/admin-auth");
+const { validateImage, storeImage } = require("./lib/image-store");
 
 const app = express();
 app.set("trust proxy", 1); // trust Railway's single-hop proxy so req.ip is the real client
@@ -237,16 +238,11 @@ app.put("/api/admin/products/:id", async (req, res) => {
 });
 app.post("/api/admin/upload", express.json({ limit: "7mb" }), async (req, res) => {
   if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
-  const { mime, data } = req.body || {};
-  const allowed = IMAGE_MIME;
-  if (allowed.indexOf(mime) < 0 || typeof data !== "string") return res.status(400).json({ error: "Unsupported image type." });
-  let buf;
-  try { buf = Buffer.from(data, "base64"); } catch (e) { return res.status(400).json({ error: "Bad image data." }); }
-  if (!buf.length || buf.length > 5 * 1024 * 1024) return res.status(400).json({ error: "Image must be 1 byte–5 MB." });
-  const id = require("crypto").randomBytes(8).toString("hex");
+  const v = validateImage(req.body || {}, IMAGE_MIME, 5 * 1024 * 1024);
+  if (!v.ok) return res.status(400).json({ error: v.error });
   await withDb(res, async (c) => {
-    await c.query("INSERT INTO images (id, mime, bytes) VALUES ($1,$2,$3)", [id, mime, buf]);
-    res.json({ ok: true, url: "/img/" + id });
+    const stored = await storeImage(c, v.buf, v.mime, null);
+    res.json({ ok: true, url: stored.url });
   });
 });
 app.get("/img/:id", async (req, res) => {
