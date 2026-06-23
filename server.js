@@ -7,6 +7,8 @@ const fs = require("fs");
 const { imageId } = require("./lib/image-id");
 const { tokensMatch } = require("./lib/admin-auth");
 const { validateImage, storeImage } = require("./lib/image-store");
+const { makeDailyCap } = require("./lib/daily-cap");
+const { cleanupProductImage } = require("./lib/gemini-image");
 
 const app = express();
 app.set("trust proxy", 1); // trust Railway's single-hop proxy so req.ip is the real client
@@ -19,13 +21,19 @@ app.use((req, res, next) => {
   next();
 });
 // Normal routes use a tight JSON limit; the image-upload route needs more headroom.
-app.use((req, res, next) => (req.path === "/api/admin/upload" ? next() : express.json({ limit: "32kb" })(req, res, next)));
+app.use((req, res, next) => {
+  const big = req.path === "/api/admin/upload" || req.path === "/api/admin/poster-image";
+  return big ? next() : express.json({ limit: "32kb" })(req, res, next);
+});
 
 const SITE = path.join(__dirname, "site");
 const IMAGE_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
 const KEY = process.env.OPENROUTER_API_KEY;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
+const aiImageCap = makeDailyCap(10, 24 * 60 * 60 * 1000); // 10 product-shot generations / 24h
 
 // TLS posture decided from the parsed hostname (not a substring match on the
 // whole URL). The private Railway network needs no TLS; any other host carries
@@ -243,6 +251,46 @@ app.post("/api/admin/upload", express.json({ limit: "7mb" }), async (req, res) =
   await withDb(res, async (c) => {
     const stored = await storeImage(c, v.buf, v.mime, null);
     res.json({ ok: true, url: stored.url });
+  });
+});
+app.post("/api/admin/poster-image", express.json({ limit: "7mb" }), async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
+  if (!GEMINI_KEY) return res.status(503).json({ error: "AI image generation isn't configured yet." });
+  if (rateLimited(req.ip || "?")) return res.status(429).json({ error: "You're doing that too quickly — give it a moment." });
+
+  const cap = aiImageCap.take(Date.now());
+  if (!cap.allowed) {
+    const hrs = Math.ceil(cap.resetInMs / 3600000);
+    return res.status(429).json({ error: "Daily AI image limit reached (10/day). Resets in " + hrs + "h." });
+  }
+
+  const v = validateImage(req.body || {}, IMAGE_MIME, 5 * 1024 * 1024);
+  if (!v.ok) return res.status(400).json({ error: v.error });
+
+  const name = cleanStr((req.body || {}).name, 120);
+  const brand = cleanStr((req.body || {}).brand, 120);
+
+  let img;
+  try {
+    img = await cleanupProductImage({
+      apiKey: GEMINI_KEY, model: GEMINI_MODEL,
+      mime: v.mime, data: req.body.data, name, brand,
+    });
+  } catch (e) {
+    console.error("Gemini image error:", e.message, e.detail || "");
+    if (e.message === "gemini_no_image") {
+      return res.status(502).json({ error: "The AI couldn't produce an image — try a clearer photo." });
+    }
+    return res.status(502).json({ error: "The image service is busy — please try again." });
+  }
+
+  let buf;
+  try { buf = Buffer.from(img.data, "base64"); }
+  catch (e) { return res.status(502).json({ error: "The AI returned an unreadable image." }); }
+
+  await withDb(res, async (c) => {
+    const stored = await storeImage(c, buf, img.mime || "image/png", "AI: " + (name || "product"));
+    res.json({ ok: true, url: stored.url, id: stored.id, remaining: cap.remaining });
   });
 });
 app.get("/img/:id", async (req, res) => {
