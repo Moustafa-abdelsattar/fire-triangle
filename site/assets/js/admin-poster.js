@@ -54,13 +54,31 @@
     document.getElementById("poster-scale").style.height = (1080 * scale) + "px";
   }
 
+  // Resolve the current photo (data: URL or /img/:id url) to { mime, data(base64) }.
+  function sourceBytes(src) {
+    var m = /^data:([^;]+);base64,(.*)$/.exec(src || "");
+    if (m) return Promise.resolve({ mime: m[1], data: m[2] });
+    return fetch(src).then(function (r) { return r.blob(); }).then(function (blob) {
+      return new Promise(function (resolve, reject) {
+        var fr = new FileReader();
+        fr.onload = function () {
+          var mm = /^data:([^;]+);base64,(.*)$/.exec(String(fr.result));
+          if (mm) resolve({ mime: mm[1], data: mm[2] }); else reject(new Error("unreadable source"));
+        };
+        fr.onerror = function () { reject(new Error("read failed")); };
+        fr.readAsDataURL(blob);
+      });
+    });
+  }
+
   function buildForm() {
     var f = document.getElementById("poster-form");
     f.innerHTML =
       '<label>Title<input id="pz-title" value="' + esc(state.title) + '"></label>' +
       '<label>Subtitle / size<input id="pz-subtitle" value="' + esc(state.subtitle) + '"></label>' +
       '<label>Product photo<div class="hero__cta"><button class="btn btn--ghost btn--sm" type="button" id="pz-pick">Pick from Media</button>' +
-      '<label class="btn btn--ghost btn--sm" style="cursor:pointer">Upload<input type="file" id="pz-file" accept="image/*" hidden></label></div></label>' +
+      '<label class="btn btn--ghost btn--sm" style="cursor:pointer">Upload<input type="file" id="pz-file" accept="image/*" hidden></label>' +
+      '<button class="btn btn--ghost btn--sm" type="button" id="pz-ai" title="Clean up the product photo with AI">✨ AI clean-up</button></div></label>' +
       '<label>Spec bullets (one per line)<textarea id="pz-bullets" rows="6">' + esc(state.bullets.join("\n")) + '</textarea></label>' +
       '<label class="poster__check"><input type="checkbox" id="pz-fm"' + (state.fm ? " checked" : "") + '> FM Approved badge</label>' +
       '<label class="poster__check"><input type="checkbox" id="pz-rd"' + (state.rapidrop ? " checked" : "") + '> Rapidrop badge</label>' +
@@ -80,6 +98,36 @@
       var fr = new FileReader();
       fr.onload = function () { state.photo = String(fr.result); paint(); }; // data URL (local preview)
       fr.readAsDataURL(fl);
+    });
+    var aiBtn = document.getElementById("pz-ai");
+    function syncAi() { aiBtn.disabled = !state.photo; }
+    syncAi();
+    document.getElementById("pz-pick").addEventListener("click", syncAi);
+    document.getElementById("pz-file").addEventListener("change", function () { setTimeout(syncAi, 0); });
+    aiBtn.addEventListener("click", function () {
+      if (!state.photo) return;
+      var msg = document.getElementById("poster-msg");
+      var left = (typeof state.aiRemaining === "number") ? " (" + state.aiRemaining + " left today)" : "";
+      if (!confirm("This uses 1 of your 10 daily AI generations" + left + ". Continue?")) return;
+      msg.textContent = "Generating AI product shot…";
+      aiBtn.disabled = true;
+      sourceBytes(state.photo).then(function (src) {
+        return A.api("/api/admin/poster-image", { method: "POST", body: JSON.stringify({
+          data: src.data, mime: src.mime, name: state.title, brand: state.rapidrop ? "Rapidrop" : "",
+        }) });
+      }).then(function (res) {
+        if (res.ok && res.data && res.data.url) {
+          state.photo = res.data.url;
+          if (typeof res.data.remaining === "number") state.aiRemaining = res.data.remaining;
+          paint(); syncAi();
+          msg.textContent = "AI shot ready ✓ · saved to Media" +
+            (typeof res.data.remaining === "number" ? " · " + res.data.remaining + "/10 left today" : "");
+          if (A.media && A.media.refresh) A.media.refresh();
+        } else {
+          msg.textContent = (res.data && res.data.error) || "AI clean-up failed.";
+          syncAi();
+        }
+      }).catch(function (e) { msg.textContent = "AI clean-up failed: " + e.message; syncAi(); });
     });
   }
   function bind(id, key) { document.getElementById(id).addEventListener("input", function () { state[key] = this.value; paint(); }); }
