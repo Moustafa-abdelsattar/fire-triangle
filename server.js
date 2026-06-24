@@ -9,6 +9,7 @@ const { tokensMatch } = require("./lib/admin-auth");
 const { validateImage, storeImage } = require("./lib/image-store");
 const { makeDailyCap } = require("./lib/daily-cap");
 const { cleanupProductImage } = require("./lib/gemini-image");
+const { validateSite, mergeDefaults, buildSystemPrompt } = require("./lib/content");
 
 const app = express();
 app.set("trust proxy", 1); // trust Railway's single-hop proxy so req.ip is the real client
@@ -59,6 +60,7 @@ async function ensureSchema() {
     await c.connect();
     await c.query("CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, mime TEXT NOT NULL, bytes BYTEA NOT NULL, created_at TIMESTAMPTZ DEFAULT now())");
     await c.query("ALTER TABLE images ADD COLUMN IF NOT EXISTS label TEXT");
+    await c.query("CREATE TABLE IF NOT EXISTS content (key TEXT PRIMARY KEY, value JSONB NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT now())");
     console.log("schema ensured");
   } catch (e) { console.error("ensureSchema failed:", e.message); }
   finally { try { await c.end(); } catch (e) {} }
@@ -71,48 +73,26 @@ function adminOk(req) {
 }
 function cleanStr(v, max) { var s = v == null ? null : String(v).trim(); if (s === "") s = null; return s == null ? null : s.slice(0, max || 400); }
 
-// ---- Assistant persona + knowledge base (kept current with the site) ----
-const SYSTEM_PROMPT = `You are the Fire Triangle Assistant, a friendly AI guide for Fire Triangle — a fire-protection company in Egypt. You live on firetriangle.net and help visitors understand the company, its products and services, and how to get in touch.
-
-PERSONA & STYLE
-- Warm, confident, concise. Default to 2–4 short sentences; use a tight bullet list only when listing products/options.
-- You may answer in the visitor's language (English or Arabic).
-- You represent Fire Triangle ("we"/"our"). Be helpful and sales-aware: when someone has a real need, guide them to request a quote or contact an engineer.
-- NEVER invent prices, exact specs, model numbers, datasheet figures, certifications, or project names that aren't in your knowledge below. If asked for specifics you don't have, say so and point them to sales@firetriangle.net or the Request-a-Quote page.
-- Only discuss Fire Triangle and fire protection. Politely decline unrelated topics and steer back.
-
-COMPANY
-- Fire Triangle, established early 2013; one of the largest specialized companies in the fire fighting & fire alarm field in Egypt. Authorized distributor for several international manufacturers since 2016.
-- Works to NFPA standards and the Egyptian Codes. 13+ years' experience, 487+ projects delivered, 50+ staff (51–200 on LinkedIn).
-- Mission: provide safety & protection for persons & properties by providing the highest quality fire alarm & fire fighting systems.
-- Vision: fulfil our commitment to clients with the highest quality at the most cost efficiency, per NFPA standards & the Egyptian Codes.
-
-SERVICES (three)
-- Trading: supply a wide range of fire alarm, water, gas and foam systems as agent for reputed global brands.
-- Contracting: implement all types of fire fighting & fire alarm systems (pumps, sprinklers, fire hose cabinets, gas, foam, conventional & addressable alarm) with NFPA-trained engineers and technicians.
-- Maintenance: maintain all systems and supply spare parts under maintenance contracts, for all brands & systems.
-
-PRODUCTS
-- Fire alarm (addressable & conventional): sole agent for Velocity and for Advanced (newly introduced to Egypt — Axis AX control panels & LCD annunciators); Apollo (XP95A smoke/heat/multicriteria detectors), Simplex, Notifier; dual-action pull stations, sounder beacons, alarm bells (GB24-6). Partner of FFE UK for special detection — Fireray beam detector, Talentum flame detector, Proreact linear heat detection.
-- Water systems: Rapidrop UK (UL/FM) — concealed/pendent/upright/sidewall sprinklers; zone control valves & trim (water flow switch, tamper switch, swing check valve, OS&Y gate valve, test & drain); grooved fittings (rigid couplings, mechanical & equal tees, 45°/90° elbows, concentric reducers, adaptor flanges); wet/dry/underground hydrants & foam-monitor hydrants; bladder tanks; fire hose reels, cabinets, hoses & nozzles. Waterfall (UL/FM) pumps — end-suction, horizontal split-case, turbine, jockey (300–5000 GPM) & pump sets, plus GVI/Clebasvision flow meters. CLA-VAL automatic control valves — pressure-reducing, relief, air-release, deluge, casing-relief, modulating-float.
-- Gas systems: FM-200 & CO₂ clean-agent (Tyco, Ceodeux, Ansul); Aerosol (FirePro, Mobiak); Fire extinguishers (Bavaria, Mobiak).
-- Foam systems for flammable-liquid / high-hazard risks.
-- Mobiak: gas and wet-chemical suppression — ball/angle/pressure-restricting valves, breeching inlets, aerosol, hood kitchen suppression. UL listed, FM approved, and LPCB & VDS certified.
-- Jianzhi: threaded malleable-iron pipe fittings for fire fighting pipework.
-
-PROJECTS
-- 487+ delivered across commercial, industrial and residential sectors. Named projects include: Cairo Airport Aircraft Hangar (24" Rapidrop OS&Y valve, via Triple A for Trading); DP World UAE (Waterfall horizontal split-case pump, via EDECS); GLC Paints (Waterfall pump system, delivered & inspected on-site); GÜLSAN Egypt Nonwoven Industries (Rapidrop 396-gallon bladder tank, UL listed); Dakahlia Agricultural Development (Waterfall split-case, 1500 GPM @ 9 bar); Souq El Habashi, Minya (Waterfall split-case, 1000 GPM @ 10 bar). A latest-projects PDF is available, and visitors can request references for their sector via Contact.
-- Fire Triangle is a Diamond Sponsor of Egypt Energy – Firex 2026, and has exhibited at Firex since 2021.
-
-CAREERS
-- No open positions right now. Candidates can send a CV via the Careers page; tagline "Are you passionate? Do you enjoy the work?".
-
-CONTACT
-- Head Office: 737 El-Gaish St., Mandara, Alexandria, Egypt. Branch: 49 El-Shaikh Ali Abd El-Razik St, Heliopolis, Cairo.
-- Tel: +20 3 5550609 / +20 3 5527726. Mobile: +20 1068 990 088. Email: sales@firetriangle.net. WhatsApp available from the site.
-- Site pages: Home, About, Products, Services, Projects, Careers, Contact.
-
-When a visitor wants a quote, a site survey, a BOQ priced, or product availability: encourage them to use the Request-a-Quote form on the Contact page or email sales@firetriangle.net, and mention an engineer typically replies within one business day.`;
+// ---- Global site settings (single source of truth), cached in-process ----
+// Read-through cache: the DB is only touched on first read and refreshed on
+// save (PUT /api/admin/content/site), so public page views + chat requests hit
+// memory rather than adding a per-request Postgres hit. Falls back to the
+// canonical defaults when there is no DB.
+let siteCache = null;
+async function loadSite() {
+  if (siteCache) return siteCache;
+  if (!process.env.DATABASE_URL) { siteCache = mergeDefaults(null); return siteCache; }
+  const c = dbClient();
+  try {
+    await c.connect();
+    const { rows } = await c.query("SELECT value FROM content WHERE key=$1", ["site"]);
+    siteCache = mergeDefaults(rows.length ? rows[0].value : null);
+  } catch (e) {
+    console.error("loadSite failed, using defaults:", e.message);
+    siteCache = mergeDefaults(null);
+  } finally { try { await c.end(); } catch (e) {} }
+  return siteCache;
+}
 
 // ---- Simple in-memory rate limiter (protects the OpenRouter credits) ----
 const HITS = new Map(); // ip -> [timestamps]
@@ -146,6 +126,7 @@ app.post("/api/chat", async (req, res) => {
 
   if (messages.length === 0) return res.status(400).json({ error: "Empty message." });
 
+  const systemPrompt = buildSystemPrompt(await loadSite());
   try {
     const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -157,7 +138,7 @@ app.post("/api/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: MODEL,
-        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
         max_tokens: 500,
         temperature: 0.4,
       }),
@@ -202,6 +183,27 @@ app.get("/api/products", async (req, res) => {
   }
   const products = fileProducts();
   res.json({ source: "file", count: products.length, products });
+});
+
+// ---- Editable site content (public read; admin-gated write) ----
+// `site` is the global settings doc (contact/footer/nav/social) served from the
+// in-process cache. The shape generalizes to future keys (home, about, …).
+app.get("/api/content/site", async (req, res) => {
+  res.set("Cache-Control", "no-cache");
+  res.json(await loadSite());
+});
+app.put("/api/admin/content/site", async (req, res) => {
+  if (!adminOk(req)) return res.status(401).json({ error: "Unauthorized" });
+  const v = validateSite(req.body || {});
+  if (!v.ok) return res.status(400).json({ error: v.error });
+  await withDb(res, async (c) => {
+    await c.query(
+      "INSERT INTO content (key,value,updated_at) VALUES ($1,$2,now()) ON CONFLICT (key) DO UPDATE SET value=$2, updated_at=now()",
+      ["site", JSON.stringify(v.value)]
+    );
+    siteCache = v.value; // refresh the cache so the change is live immediately
+    res.json({ ok: true, value: v.value });
+  });
 });
 
 // ---- Admin product management (Bearer ADMIN_PASSWORD; writes go to the DB) ----
