@@ -46,7 +46,15 @@
       '<div class="pz-foot"><div class="pz-office">' + esc(state.head) + '<br>' + esc(state.branch) + '</div>' +
       '<div class="pz-contact"><span>Contact Us</span><div>' + phones + '</div></div></div>';
   }
-  function paint() { document.getElementById("poster-stage").innerHTML = stageHTML(); fitStage(); }
+  function paint() {
+    document.getElementById("poster-stage").innerHTML = stageHTML();
+    fitStage();
+    // Keep the AI button in sync with the photo every time state changes — the
+    // photo is set asynchronously (FileReader / media-pick promise), so syncing
+    // only on the triggering event races ahead of state.photo being assigned.
+    var ai = document.getElementById("pz-ai");
+    if (ai) ai.disabled = !state.photo;
+  }
   function fitStage() {
     var box = document.querySelector(".poster__preview");
     var scale = Math.min(1, (box.clientWidth - 4) / 1080);
@@ -101,9 +109,7 @@
     });
     var aiBtn = document.getElementById("pz-ai");
     function syncAi() { aiBtn.disabled = !state.photo; }
-    syncAi();
-    document.getElementById("pz-pick").addEventListener("click", syncAi);
-    document.getElementById("pz-file").addEventListener("change", function () { setTimeout(syncAi, 0); });
+    syncAi(); // paint() keeps this in sync afterward as state.photo changes
     aiBtn.addEventListener("click", function () {
       if (!state.photo) return;
       var msg = document.getElementById("poster-msg");
