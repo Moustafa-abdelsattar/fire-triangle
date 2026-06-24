@@ -6,35 +6,62 @@
 (function () {
   "use strict";
 
-  var NAV = [
-    ["index", "Home"], ["about", "About"], ["products", "Products"],
-    ["services", "Services"], ["projects", "Projects"], ["careers", "Careers"], ["contact", "Contact"]
-  ];
-  var SOCIAL = [
-    ["https://www.facebook.com/firetriangleoffical/", "Facebook", "f"],
-    ["https://linkedin.com/company/fire-triangle", "LinkedIn", "in"],
-    ["https://wa.link/zya3z4", "WhatsApp", "wa"],
-    ["https://www.youtube.com/@FireTriangleforengineering", "YouTube", "yt"]
-  ];
+  // Default global settings — mirrors lib/content.js SITE_DEFAULTS so the site
+  // still renders correctly offline (file://) and before the live settings load.
+  // When served by the server, fetched /api/content/site overrides these.
+  var DEFAULT_SITE = {
+    contact: { tel1: "+20 3 5550609", tel2: "+20 3 5527726", mobile: "+20 1068 990 088", email: "sales@firetriangle.net", whatsapp: "https://wa.link/zya3z4" },
+    offices: {
+      head: { label: "Head Office", address: "737 El-Gaish St. — Mandara, Alexandria, Egypt." },
+      branch: { label: "Branch", address: "49 El-Shaikh Ali Abd El-Razik St, Heliopolis, Cairo." }
+    },
+    social: {
+      facebook: "https://www.facebook.com/firetriangleoffical/",
+      linkedin: "https://linkedin.com/company/fire-triangle",
+      whatsapp: "https://wa.link/zya3z4",
+      youtube: "https://www.youtube.com/@FireTriangleforengineering"
+    },
+    footer: { tagline: "Fire needs three things. We control all three.", copyright: "All rights reserved for Fire Triangle © 2026" },
+    header: { wordmark: "FIRE TRIANGLE", cta_label: "Request a quote", cta_href: "contact.html" },
+    nav: [
+      { label: "Home", href: "index.html", show: true }, { label: "About", href: "about.html", show: true },
+      { label: "Products", href: "products.html", show: true }, { label: "Services", href: "services.html", show: true },
+      { label: "Projects", href: "projects.html", show: true }, { label: "Careers", href: "careers.html", show: true },
+      { label: "Contact", href: "contact.html", show: true }
+    ]
+  };
+  var SOCIAL_ICON = { facebook: ["Facebook", "f"], linkedin: ["LinkedIn", "in"], whatsapp: ["WhatsApp", "wa"], youtube: ["YouTube", "yt"] };
 
-  function renderChrome(active) {
+  function esc(s) {
+    return (s == null ? "" : String(s)).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function navName(href) { return String(href || "").replace(/\.html$/, ""); }
+  function getPath(obj, path) {
+    return String(path).split(".").reduce(function (o, k) { return o == null ? undefined : o[k]; }, obj);
+  }
+
+  function renderChrome(active, site) {
+    site = site || DEFAULT_SITE;
+    var nav = (site.nav || DEFAULT_SITE.nav).filter(function (n) { return n && n.show !== false; });
     var header = document.getElementById("site-header");
     if (header) {
       header.innerHTML =
         '<a class="logo" href="index.html" aria-label="Fire Triangle home">' +
         '<img class="logo__img" src="assets/img/logo.png" alt="Fire Triangle" width="44" height="41">' +
-        '<span class="logo__word">FIRE&nbsp;TRIANGLE</span>' +
+        '<span class="logo__word">' + esc(site.header.wordmark).replace(/ /g, "&nbsp;") + '</span>' +
         '</a>' +
         '<button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">' +
         '<span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>' +
         '</button>' +
         '<nav id="primary-nav" aria-label="Primary"><ul class="nav">' +
-        NAV.map(function (p) {
-          return '<li><a href="' + p[0] + '.html"' + (p[0] === active ? ' aria-current="page"' : '') + '>' + p[1] + '</a></li>';
+        nav.map(function (p) {
+          return '<li><a href="' + esc(p.href) + '"' + (navName(p.href) === active ? ' aria-current="page"' : '') + '>' + esc(p.label) + '</a></li>';
         }).join("") +
-        '<li class="nav__cta"><a class="btn btn--primary" href="contact.html">Request a quote</a></li>' +
+        '<li class="nav__cta"><a class="btn btn--primary" href="' + esc(site.header.cta_href) + '">' + esc(site.header.cta_label) + '</a></li>' +
         '</ul></nav>' +
-        '<a class="btn btn--primary header__cta" href="contact.html">Request a quote</a>';
+        '<a class="btn btn--primary header__cta" href="' + esc(site.header.cta_href) + '">' + esc(site.header.cta_label) + '</a>';
 
       var navToggle = header.querySelector(".nav-toggle");
       var primaryNav = header.querySelector("#primary-nav");
@@ -55,27 +82,53 @@
     }
     var footer = document.getElementById("site-footer");
     if (footer) {
+      var c = site.contact, off = site.offices, soc = site.social;
       footer.innerHTML =
         '<div class="container footer__grid">' +
         '<div><a class="logo logo--light" href="index.html" aria-label="Fire Triangle home">' +
-        '<span class="logo__word">FIRE TRIANGLE</span></a>' +
-        '<p class="footer__tag">Fire needs three things. We control all three.</p></div>' +
+        '<span class="logo__word">' + esc(site.header.wordmark) + '</span></a>' +
+        '<p class="footer__tag">' + esc(site.footer.tagline) + '</p></div>' +
         '<nav aria-label="Footer"><h3 class="footer__h">Site</h3><ul>' +
-        NAV.slice(1).map(function (p) { return '<li><a href="' + p[0] + '.html">' + p[1] + '</a></li>'; }).join("") +
+        nav.slice(1).map(function (p) { return '<li><a href="' + esc(p.href) + '">' + esc(p.label) + '</a></li>'; }).join("") +
         '</ul></nav>' +
         '<div><h3 class="footer__h">Find us</h3>' +
-        '<p>Head Office: 737 El-Gaish St. — Mandara, Alexandria, Egypt.</p>' +
-        '<p>Branch: 49 El-Shaikh Ali Abd El-Razik St, Heliopolis, Cairo.</p></div>' +
+        '<p>' + esc(off.head.label) + ': ' + esc(off.head.address) + '</p>' +
+        '<p>' + esc(off.branch.label) + ': ' + esc(off.branch.address) + '</p></div>' +
         '<div><h3 class="footer__h">Contact</h3>' +
-        '<p>Tel: +20 3 5550609 / +20 3 5527726</p>' +
-        '<p>Mobile: +20 1068 990 088</p>' +
-        '<p>Email: <a href="mailto:sales@firetriangle.net">sales@firetriangle.net</a></p>' +
+        '<p>Tel: ' + esc(c.tel1) + ' / ' + esc(c.tel2) + '</p>' +
+        '<p>Mobile: ' + esc(c.mobile) + '</p>' +
+        '<p>Email: <a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a></p>' +
         '<ul class="social">' +
-        SOCIAL.map(function (s) { return '<li><a href="' + s[0] + '" aria-label="' + s[1] + '" class="social__' + s[2] + '">' + s[2] + '</a></li>'; }).join("") +
+        ["facebook", "linkedin", "whatsapp", "youtube"].filter(function (k) { return soc[k]; }).map(function (k) {
+          var ic = SOCIAL_ICON[k];
+          return '<li><a href="' + esc(soc[k]) + '" aria-label="' + ic[0] + '" class="social__' + ic[1] + '">' + ic[1] + '</a></li>';
+        }).join("") +
         '</ul></div>' +
         '</div>' +
-        '<div class="container footer__legal"><span>All rights reserved for Fire Triangle © 2026</span></div>';
+        '<div class="container footer__legal"><span>' + esc(site.footer.copyright) + '</span></div>';
     }
+  }
+
+  // Fill in-page content hooks from the settings doc (used on contact/careers/
+  // thankyou). The HTML keeps default text so file:// and no-JS still show it;
+  // this only overrides when a value is present.
+  function applyHooks(site) {
+    document.querySelectorAll("[data-site]").forEach(function (el) {
+      var v = getPath(site, el.getAttribute("data-site"));
+      if (v != null && v !== "") el.textContent = v;
+    });
+    document.querySelectorAll("[data-site-mailto]").forEach(function (el) {
+      var v = getPath(site, el.getAttribute("data-site-mailto"));
+      if (v) { el.setAttribute("href", "mailto:" + v); el.textContent = v; }
+    });
+    document.querySelectorAll("[data-site-href]").forEach(function (el) {
+      var v = getPath(site, el.getAttribute("data-site-href"));
+      if (v) el.setAttribute("href", v);
+    });
+    document.querySelectorAll("[data-site-src]").forEach(function (el) {
+      var v = getPath(site, el.getAttribute("data-site-src"));
+      if (v) el.setAttribute("src", v);
+    });
   }
 
   function buildTriangle(opts) {
@@ -109,7 +162,17 @@
   }
 
   var page = document.body.dataset.page || "index";
-  renderChrome(page);
+  renderChrome(page, DEFAULT_SITE);
+  // Live settings override the baked-in defaults when served by the server
+  // (skipped on file:// where there is no server — defaults stand).
+  if (location.protocol !== "file:") {
+    fetch("/api/content/site")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (site) {
+        if (site) { window.__SITE = site; renderChrome(page, site); applyHooks(site); }
+      })
+      .catch(function () {});
+  }
 
   var slot = document.getElementById("triangle-slot");
   if (slot) slot.appendChild(buildTriangle({}));
